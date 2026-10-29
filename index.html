@@ -279,16 +279,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // LIMPEZA AUTOMÁTICA DE VERSÕES ANTIGAS DO LOCALSTORAGE
-            localStorage.removeItem('ds_quest_state');
-            localStorage.removeItem('code_quest_multi_lang');
+            // ELIMINAR QUALQUER REGISTO ANTIGO GUARDADO NO NAVEGADOR
+            localStorage.clear();
 
-            // MONTAGEM DO BANCO DE DADOS DE 300 NÍVEIS POR LINGUAGEM
+            // CONSTRUÇÃO DO BANCO DE DADOS COMPLETO COM 300 NÍVEIS
             const db = { python: [], sql: [], html: [] };
-
             const techNames = { python: "PYTHON", sql: "SQL", html: "HTML" };
 
-            // GERADOR DOS 300 NÍVEIS DINÂMICOS
             ['python', 'sql', 'html'].forEach(lang => {
                 for (let i = 1; i <= 300; i++) {
                     let cat = "";
@@ -383,7 +380,7 @@
                 }
             });
 
-            // ESTADO DO JOGO
+            // ESTADO INICIAL
             let state = {
                 lang: 'python',
                 currentLevelIndex: 0,
@@ -396,27 +393,8 @@
                 streak: 0
             };
 
-            function loadStorage() {
-                const saved = localStorage.getItem('code_quest_v300_final');
-                if (saved) {
-                    try {
-                        const parsed = JSON.parse(saved);
-                        state.lang = parsed.lang || 'python';
-                        state.currentLevelIndex = parsed.currentLevelIndex || 0;
-                        state.score = parsed.score || 0;
-                        state.streak = parsed.streak || 0;
-                        
-                        if (parsed.completed) {
-                            state.completed.python = new Set(parsed.completed.python || []);
-                            state.completed.sql = new Set(parsed.completed.sql || []);
-                            state.completed.html = new Set(parsed.completed.html || []);
-                        }
-                    } catch(e) {}
-                }
-            }
-
             function saveStorage() {
-                localStorage.setItem('code_quest_v300_final', JSON.stringify({
+                localStorage.setItem('code_quest_v300_prod', JSON.stringify({
                     lang: state.lang,
                     currentLevelIndex: state.currentLevelIndex,
                     score: state.score,
@@ -429,7 +407,7 @@
                 }));
             }
 
-            // ELEMENTOS DO DOM
+            // REFERÊNCIAS DOM
             const currentLevelNum = document.getElementById('currentLevelNum');
             const techBadge = document.getElementById('techBadge');
             const difficultyBadge = document.getElementById('difficultyBadge');
@@ -461,7 +439,7 @@
             const levelsGrid = document.getElementById('levelsGrid');
             const resetProgressBtn = document.getElementById('resetProgressBtn');
 
-            // RENDERIZAÇÃO
+            // FUNÇÃO DE DESENHO DA PÁGINA
             function renderLevel() {
                 const currentList = db[state.lang];
                 const lvl = currentList[state.currentLevelIndex];
@@ -513,7 +491,7 @@
                 progressBar.style.width = `${pct}%`;
             }
 
-            // CHECAR RESPOSTA
+            // VERIFICAR RESPOSTA
             answerForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const inputVal = answerInput.value.trim();
@@ -539,7 +517,7 @@
                     feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
                     feedbackTitle.innerText = "Excelente! Código Correto!";
                     feedbackTitle.className = "font-bold text-lg mb-1 text-emerald-400";
-                    feedbackText.innerText = `Você acertou preenchendo perfeitamente com '${inputVal}'.`;
+                    feedbackText.innerText = `Preencheu com sucesso usando '${inputVal}'.`;
                     explanationText.innerHTML = lvl.explanation;
                 } else {
                     state.streak = 0;
@@ -550,12 +528,12 @@
                     feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i>`;
                     feedbackTitle.innerText = "Sintaxe Incorreta";
                     feedbackTitle.className = "font-bold text-lg mb-1 text-rose-400";
-                    feedbackText.innerText = `O valor '${inputVal}' não responde a esta lacuna. Tente novamente!`;
-                    explanationText.innerHTML = `Examine as regras e sintaxe da etapa ${lvl.category}.`;
+                    feedbackText.innerText = `O valor '${inputVal}' não resolve a lacuna. Tente novamente!`;
+                    explanationText.innerHTML = `Considere a sintaxe correspondente ao nível de ${lvl.category}.`;
                 }
             });
 
-            // TROCAR DE LINGUAGEM
+            // MUDANÇA DE SEPARADOR
             document.querySelectorAll('.lang-tab').forEach(tab => {
                 tab.addEventListener('click', (e) => {
                     const targetLang = e.currentTarget.dataset.lang;
@@ -568,7 +546,7 @@
                 });
             });
 
-            // AJUDAS
+            // BOTOES DE AJUDA
             hintBtn.addEventListener('click', () => {
                 const lvl = db[state.lang][state.currentLevelIndex];
                 hintText.innerText = lvl.hint;
@@ -605,7 +583,7 @@
                 }
             });
 
-            // DRAWER SIDEBAR
+            // MENU LATERAL
             toggleSidebarBtn.addEventListener('click', () => {
                 levelsSidebar.classList.remove('translate-x-full');
             });
@@ -664,9 +642,9 @@
                 });
             });
 
-            // REINICIAR TUDO
+            // REINICIAR
             resetProgressBtn.addEventListener('click', () => {
-                if (confirm("Tem certeza que deseja reiniciar o progresso dos 300 níveis?")) {
+                if (confirm("Deseja reiniciar todo o progresso dos 300 níveis?")) {
                     state.completed[state.lang].clear();
                     state.currentLevelIndex = 0;
                     saveStorage();
@@ -674,8 +652,7 @@
                 }
             });
 
-            // INICIALIZAÇÃO
-            loadStorage();
+            // RENDER INICIAL
             renderLevel();
         });
     </script>
