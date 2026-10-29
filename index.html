@@ -244,4 +244,463 @@
         </main>
 
         <!-- Levels Drawer / Sidebar -->
-        <aside id="levelsSidebar" class="fixed inset-y-0 right-0 w-80 bg-slate-900 border-l border-slate-800 shadow
+        <aside id="levelsSidebar" class="fixed inset-y-0 right-0 w-80 bg-slate-900 border-l border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col">
+            <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+                <h3 class="font-bold text-slate-200 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-cubes text-blue-400"></i> Seleção de Níveis (1-100)
+                </h3>
+                <button id="closeSidebarBtn" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Difficulty Filters -->
+            <div class="p-3 bg-slate-950/50 border-b border-slate-800 flex justify-between gap-1 text-[11px]">
+                <button data-filter="all" class="filter-btn active px-2 py-1 rounded bg-blue-600 text-white font-medium">Todos</button>
+                <button data-filter="basic" class="filter-btn px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">1-25</button>
+                <button data-filter="inter" class="filter-btn px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">26-50</button>
+                <button data-filter="adv" class="filter-btn px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">51-75</button>
+                <button data-filter="extra" class="filter-btn px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">76-100</button>
+            </div>
+
+            <!-- Levels Grid List -->
+            <div id="levelsGrid" class="flex-1 overflow-y-auto p-4 grid grid-cols-5 gap-2 custom-scrollbar">
+            </div>
+
+            <div class="p-3 border-t border-slate-800 bg-slate-950/80 text-center">
+                <button id="resetProgressBtn" class="text-xs text-rose-400 hover:text-rose-300 transition flex items-center justify-center gap-1.5 w-full py-1.5">
+                    <i class="fa-solid fa-rotate-left"></i> Reiniciar Progresso desta Trilha
+                </button>
+            </div>
+        </aside>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // BANCOS DE DADOS DE PERGUNTAS POR LINGUAGEM
+            const db = {
+                python: [
+                    { id: 1, tech: "Python", category: "Iniciante", title: "Primeira Mensagem", desc: "Qual comando é usado no Python para exibir um texto na tela?", code: "___('Olá, mundo!')", answers: ["print", "print()"], hint: "Palavra em inglês para 'imprimir'.", explanation: "`print()` exibe mensagens ou dados no console.", filename: "app.py" },
+                    { id: 2, tech: "Python", category: "Iniciante", title: "Criando Variável de Texto", desc: "Textos (Strings) no Python devem ser envolvidos por qual caractere?", code: "nome = ___Maria___", answers: ['"'], hint: "Pode ser aspas duplas ou simples.", explanation: "Em Python, delimitamos texto entre aspas simples ('') ou duplas (\"\").", filename: "variavel.py" },
+                    { id: 3, tech: "Python", category: "Iniciante", title: "Somando Dois Números", desc: "Qual operador faz a soma matemática em Python?", code: "resultado = 10 ___ 5\nprint(resultado) # Imprime 15", answers: ["+"], hint: "O sinal de adição.", explanation: "O operador `+` soma valores numéricos.", filename: "soma.py" },
+                    { id: 4, tech: "Python", category: "Iniciante", title: "Entrada de Dados", desc: "Qual comando pede para o usuário digitar algo?", code: "nome = ___('Qual seu nome? ')", answers: ["input", "input()"], hint: "Termo em inglês para 'entrada'.", explanation: "`input()` lê um texto digitado pelo usuário.", filename: "entrada.py" },
+                    { id: 5, tech: "Python", category: "Iniciante", title: "Conversão para Número Inteiro", desc: "Como convertemos um texto digitado para número inteiro?", code: "idade = ___('25')", answers: ["int", "int()"], hint: "Abreviação de Integer.", explanation: "`int()` converte textos contendo dígitos em números inteiros.", filename: "conversao.py" },
+                    { id: 6, tech: "Python", category: "Iniciante", title: "Condicional SE", desc: "Qual comando inicia uma verificação condicional em Python?", code: "___ idade >= 18:\n    print('Maior de idade')", answers: ["if"], hint: "Palavra em inglês para 'se'.", explanation: "`if` executa um bloco de código se a condição for verdadeira.", filename: "condicao.py" },
+                    { id: 7, tech: "Python", category: "Iniciante", title: "Condicional SENÃO", desc: "Qual palavra usamos para 'caso contrário' em uma condição?", code: "if idade >= 18:\n    print('Adulto')\n___:\n    print('Menor de idade')", answers: ["else"], hint: "Palavra em inglês para 'senão'.", explanation: "`else` trata os casos em que o `if` for falso.", filename: "senao.py" },
+                    { id: 8, tech: "Python", category: "Iniciante", title: "Lista de Itens", desc: "Quais caracteres delimitam uma lista no Python?", code: "frutas = ___'maçã', 'banana', 'uva'___", answers: ["[]", "[ ]"], hint: "Colchetes quadricularizados.", explanation: "Listas em Python são criadas usando colchetes `[]`.", filename: "lista.py" },
+                    { id: 9, tech: "Python", category: "Iniciante", title: "Tamanho de uma Lista", desc: "Qual função conta quantos itens há em uma lista?", code: "compras = ['arroz', 'feijão', 'leite']\ntotal = ___(compras)", answers: ["len", "len()"], hint: "Curto para 'length'.", explanation: "`len()` retorna a quantidade de itens de uma coleção.", filename: "tamanho.py" },
+                    { id: 10, tech: "Python", category: "Iniciante", title: "Adicionar Item na Lista", desc: "Qual método adiciona um novo elemento ao final de uma lista?", code: "frutas = ['maçã']\nfrutas.___('laranja')", answers: ["append", "append()"], hint: "Significa 'anexar'.", explanation: "`.append()` insere um item no final da lista.", filename: "adicionar.py" },
+                    { id: 11, tech: "Python", category: "Iniciante", title: "Laço de Repetição FOR", desc: "Qual palavra inicia um loop para percorrer cada item de uma lista?", code: "___ fruta in frutas:\n    print(fruta)", answers: ["for"], hint: "Palavra em inglês para 'para'.", explanation: "O loop `for` itera sobre elementos de uma sequência.", filename: "loop_for.py" },
+                    { id: 12, tech: "Python", category: "Iniciante", title: "Laço WHILE", desc: "Qual comando repete um código 'ENQUANTO' uma condição for verdadeira?", code: "contador = 0\n___ contador < 5:\n    contador += 1", answers: ["while"], hint: "Palavra para 'enquanto'.", explanation: "`while` repete o bloco enquanto a condição permanecer verdadeira.", filename: "while.py" },
+                    { id: 13, tech: "Python", category: "Iniciante", title: "Criando Funções", desc: "Qual palavra-chave usamos para definir uma nova função?", code: "___ saudar():\n    print('Olá!')", answers: ["def"], hint: "Curto para 'define'.", explanation: "`def` inicia a declaração de uma função customizada.", filename: "funcao.py" },
+                    { id: 14, tech: "Python", category: "Iniciante", title: "Retorno de Função", desc: "Qual palavra devolve o resultado de uma função para quem a chamou?", code: "def somar(a, b):\n    ___ a + b", answers: ["return"], hint: "Palavra em inglês para 'retornar'.", explanation: "`return` envia o valor calculated de volta ao chamador.", filename: "retorno.py" },
+                    { id: 15, tech: "Python", category: "Iniciante", title: "Comentários no Código", desc: "Qual símbolo inicia um comentário de uma linha em Python?", code: "___ Este é um comentário que o Python ignora\nprint('Teste')", answers: ["#"], hint: "Também conhecido como 'cerquilha' ou 'hashtag'.", explanation: "`#` faz o Python ignorar o texto restante daquela linha.", filename: "comentario.py" },
+                    { id: 16, tech: "Python", category: "Iniciante", title: "Operador de Igualdade", desc: "Qual operador compara se dois valores são IGUAIS?", code: "if nota ___ 10:\n    print('Nota máxima!')", answers: ["=="], hint: "São dois sinais de igual seguidos.", explanation: "`==` compara igualdade, enquanto `=` faz atribuição.", filename: "igualidade.py" },
+                    { id: 17, tech: "Python", category: "Iniciante", title: "Resto da Divisão", desc: "Qual operador calcula o resto de uma divisão (módulo)?", code: "resto = 10 ___ 3\n# O resto é 1", answers: ["%"], hint: "Símbolo de porcentagem.", explanation: "`%` retorna o resto da divisão inteira.", filename: "modulo.py" },
+                    { id: 18, tech: "Python", category: "Iniciante", title: "Importar Módulos", desc: "Qual comando carrega uma biblioteca externa como 'math'?", code: "___ math\nprint(math.sqrt(16))", answers: ["import"], hint: "Significa 'importar'.", explanation: "`import` disponibiliza bibliotecas no seu programa.", filename: "importar.py" },
+                    { id: 19, tech: "Python", category: "Iniciante", title: "Dicionários (Chave e Valor)", desc: "Dicionários guardam pares de chave e valor entre quais símbolos?", code: "pessoa = ___ 'nome': 'Ana', 'idade': 20 ___", answers: ["{}"], hint: "Chaves curvilíneas.", explanation: "Dicionários no Python usam chaves `{}`.", filename: "dict.py" },
+                    { id: 20, tech: "Python", category: "Iniciante", title: "Número Decimal (Float)", desc: "Qual função converte um número/texto para ponto flutuante?", code: "preco = ___('19.99')", answers: ["float", "float()"], hint: "Termo para números decimais.", explanation: "`float()` aceita decimais com ponto.", filename: "float.py" },
+                    { id: 21, tech: "Python", category: "Iniciante", title: "Soma de Elementos", desc: "Qual função soma diretamente todos os números de uma lista?", code: "notas = [7, 8, 9]\ntotal = ___(notas)", answers: ["sum", "sum()"], hint: "Inglês para soma.", explanation: "`sum()` faz o somatório de iteráveis numéricos.", filename: "soma_lista.py" },
+                    { id: 22, tech: "Python", category: "Iniciante", title: "Valor Máximo", desc: "Como encontrar o maior número dentro de uma lista?", code: "numeros = [5, 12, 3]\nmaior = ___(numeros)", answers: ["max", "max()"], hint: "Curto para Maximum.", explanation: "`max()` devolve o maior valor de uma coleção.", filename: "maior.py" },
+                    { id: 23, tech: "Python", category: "Iniciante", title: "Operador Lógico E", desc: "Qual palavra exige que DUAS condições sejam verdadeiras?", code: "if idade >= 18 ___ possui_cnh:\n    print('Pode dirigir')", answers: ["and"], hint: "Inglês para 'e'.", explanation: "`and` resulta verdadeiro apenas se ambos lados forem verdadeiros.", filename: "operador_and.py" },
+                    { id: 24, tech: "Python", category: "Iniciante", title: "Operador Lógico OU", desc: "Qual palavra aceita se PELO MENOS UMA condição for verdadeira?", code: "if eh_sabado ___ eh_domingo:\n    print('Fim de semana!')", answers: ["or"], hint: "Inglês para 'ou'.", explanation: "`or` exige apenas uma condição satisfeita.", filename: "operador_or.py" },
+                    { id: 25, tech: "Python", category: "Iniciante", title: "Booleano Verdadeiro", desc: "Em Python, como se escreve o valor booleano VERDADEIRO (com inicial maiúscula)?", code: "ativo = ___", answers: ["True"], hint: "Com 'T' maiúsculo.", explanation: "Booleans em Python são `True` e `False`.", filename: "bool.py" }
+                ],
+
+                sql: [
+                    { id: 1, tech: "SQL", category: "Iniciante", title: "Selecionar Dados", desc: "Qual o comando principal para buscar e consultar dados no banco?", code: "___ * FROM clientes;", answers: ["SELECT", "select"], hint: "Significa 'Selecionar'.", explanation: "`SELECT` especifica as colunas que você deseja buscar.", filename: "consulta.sql" },
+                    { id: 2, tech: "SQL", category: "Iniciante", title: "Origem dos Dados", desc: "Qual palavra indica de qual TABELA os dados serão lidos?", code: "SELECT * ___ usuarios;", answers: ["FROM", "from"], hint: "Inglês para 'de' / 'a partir de'.", explanation: "`FROM` define a tabela de origem da consulta.", filename: "origem.sql" },
+                    { id: 3, tech: "SQL", category: "Iniciante", title: "Filtrar Resultados", desc: "Qual comando cria filtros condicionais em SQL?", code: "SELECT * FROM produtos\n___ preco > 50;", answers: ["WHERE", "where"], hint: "Significa 'onde'.", explanation: "`WHERE` filtra as linhas conforme critérios especificos.", filename: "filtro.sql" },
+                    { id: 4, tech: "SQL", category: "Iniciante", title: "Inserir Novo Registro", desc: "Qual comando adiciona novas linhas em uma tabela?", code: "___ INTO clientes VALUES ('Carlos', 30);", answers: ["INSERT", "insert"], hint: "Significa 'Inserir'.", explanation: "`INSERT INTO` insere novos registros na tabela.", filename: "inserir.sql" },
+                    { id: 5, tech: "SQL", category: "Iniciante", title: "Atualizar Dados", desc: "Qual comando modifica dados já existentes na tabela?", code: "___ usuarios SET status = 'ativo';", answers: ["UPDATE", "update"], hint: "Significa 'Atualizar'.", explanation: "`UPDATE` altera registros existentes no banco.", filename: "atualizar.sql" },
+                    { id: 6, tech: "SQL", category: "Iniciante", title: "Deletar Dados", desc: "Qual comando apaga registros da tabela?", code: "___ FROM clientes WHERE id = 5;", answers: ["DELETE", "delete"], hint: "Significa 'Deletar'.", explanation: "`DELETE FROM` remove linhas correspondentes do banco.", filename: "deletar.sql" },
+                    { id: 7, tech: "SQL", category: "Iniciante", title: "Ordenar Resultados", desc: "Quais palavras organizam a ordem dos resultados?", code: "SELECT * FROM alunos\n___ BY nome;", answers: ["ORDER", "order"], hint: "Palavra que vem antes de BY.", explanation: "`ORDER BY` ordena os resultados por colunas.", filename: "ordem.sql" },
+                    { id: 8, tech: "SQL", category: "Iniciante", title: "Contar Linhas", desc: "Qual função conta o número total de registros?", code: "SELECT ___( * ) FROM pedidos;", answers: ["COUNT", "count", "COUNT()", "count()"], hint: "Significa 'Contar'.", explanation: "`COUNT(*)` devolve a quantidade total de linhas.", filename: "contar.sql" },
+                    { id: 9, tech: "SQL", category: "Iniciante", title: "Valor Máximo", desc: "Qual função descobre o maior valor de uma coluna?", code: "SELECT ___(preco) FROM produtos;", answers: ["MAX", "max", "MAX()", "max()"], hint: "Abreviação de 'Máximo'.", explanation: "`MAX()` retorna o valor mais alto da coluna.", filename: "max.sql" },
+                    { id: 10, tech: "SQL", category: "Iniciante", title: "Valor Mínimo", desc: "Qual função localiza o menor valor de uma coluna?", code: "SELECT ___(idade) FROM funcionarios;", answers: ["MIN", "min", "MIN()", "min()"], hint: "Abreviação de 'Mínimo'.", explanation: "`MIN()` descobre o menor número na coluna.", filename: "min.sql" },
+                    { id: 11, tech: "SQL", category: "Iniciante", title: "Calcular Média", desc: "Qual função calcula a média aritmética em SQL?", code: "SELECT ___(salario) FROM funcionarios;", answers: ["AVG", "avg", "AVG()", "avg()"], hint: "Abreviação de Average.", explanation: "`AVG()` calcula a média dos valores numéricos.", filename: "media.sql" },
+                    { id: 12, tech: "SQL", category: "Iniciante", title: "Somar Valores", desc: "Qual função calcula a soma de todos os números de uma coluna?", code: "SELECT ___(valor) FROM vendas;", answers: ["SUM", "sum", "SUM()", "sum()"], hint: "Significa 'Soma'.", explanation: "`SUM()` totaliza a soma de valores da coluna.", filename: "soma.sql" },
+                    { id: 13, tech: "SQL", category: "Iniciante", title: "Evitar Duplicados", desc: "Qual palavra-chave elimina valores repetidos da busca?", code: "SELECT ___ cidade FROM clientes;", answers: ["DISTINCT", "distinct"], hint: "Significa 'Distinto'.", explanation: "`DISTINCT` descarta registros duplicados.", filename: "distinto.sql" },
+                    { id: 14, tech: "SQL", category: "Iniciante", title: "Limitar Quantidade", desc: "Qual cláusula limita a quantidade de resultados retornados?", code: "SELECT * FROM produtos\n___ 5;", answers: ["LIMIT", "limit"], hint: "Significa 'Limite'.", explanation: "`LIMIT` restringe quantas linhas o banco devolve.", filename: "limite.sql" },
+                    { id: 15, tech: "SQL", category: "Iniciante", title: "Busca por Padrão de Texto", desc: "Qual operador permite buscar por partes de um texto usando `%`?", code: "SELECT * FROM clientes\nWHERE nome ___ 'Ana%';", answers: ["LIKE", "like"], hint: "Compara textos por padrão.", explanation: "`LIKE` com `%` faz busca por aproximação ou trecho de texto.", filename: "like.sql" },
+                    { id: 16, tech: "SQL", category: "Iniciante", title: "Criar Tabela", desc: "Qual comando cria uma nova estrutura de tabela no banco?", code: "___ TABLE alunos (\n    id INT,\n    nome VARCHAR(50)\n);", answers: ["CREATE", "create"], hint: "Significa 'Criar'.", explanation: "`CREATE TABLE` constrói novas tabelas.", filename: "criar_tabela.sql" },
+                    { id: 17, tech: "SQL", category: "Iniciante", title: "Agrupar Registros", desc: "Qual comando junta linhas em grupos para agregação?", code: "SELECT categoria, COUNT(*) FROM produtos\n___ BY categoria;", answers: ["GROUP", "group"], hint: "Agrupa por colunas.", explanation: "`GROUP BY` agrupa linhas que têm valores comuns.", filename: "agrupar.sql" },
+                    { id: 18, tech: "SQL", category: "Iniciante", title: "Valores Entre Intervalos", desc: "Qual operador verifica se um valor está ENTRE dois limites?", code: "SELECT * FROM produtos\nWHERE preco ___ 10 AND 50;", answers: ["BETWEEN", "between"], hint: "Inglês para 'entre'.", explanation: "`BETWEEN` filtra por faixas de valores inclusivos.", filename: "intervalo.sql" },
+                    { id: 19, tech: "SQL", category: "Iniciante", title: "Verificar Nulos", desc: "Como verificamos se uma coluna ESTÁ NULA/VAZIA?", code: "SELECT * FROM clientes\nWHERE telefone IS ___;", answers: ["NULL", "null"], hint: "Representa ausência de valor.", explanation: "`IS NULL` busca por campos não preenchidos.", filename: "nulos.sql" },
+                    { id: 20, tech: "SQL", category: "Iniciante", title: "Operador de Inclusão", desc: "Qual operador substitui vários OR comparando com uma lista?", code: "SELECT * FROM pedidos\nWHERE status ___ ('Pendente', 'Enviado');", answers: ["IN", "in"], hint: "Inglês para 'em'.", explanation: "`IN` testa se o valor pertence a uma lista de opções.", filename: "operador_in.sql" },
+                    { id: 21, tech: "SQL", category: "Iniciante", title: "Ordem Decrescente", desc: "Qual palavra no final do ORDER BY ordena do maior para o menor?", code: "SELECT * FROM vendas\nORDER BY valor ___;", answers: ["DESC", "desc"], hint: "Abreviação de Descending.", explanation: "`DESC` traz os dados em ordem decrescente.", filename: "desc.sql" },
+                    { id: 22, tech: "SQL", category: "Iniciante", title: "Junção de Tabelas", desc: "Qual comando combina registros de duas tabelas relacionadas?", code: "SELECT * FROM pedidos\nINNER ___ clientes ON pedidos.cliente_id = clientes.id;", answers: ["JOIN", "join"], hint: "Inglês para 'Juntar'.", explanation: "`JOIN` une colunas de diferentes tabelas.", filename: "join.sql" },
+                    { id: 23, tech: "SQL", category: "Iniciante", title: "Apagar Tabela Completa", desc: "Qual comando destrói e remove uma tabela por completo?", code: "___ TABLE temporaria;", answers: ["DROP", "drop"], hint: "Significa 'Derrubar/Remover'.", explanation: "`DROP TABLE` exclui a tabela e todos os seus dados.", filename: "drop.sql" },
+                    { id: 24, tech: "SQL", category: "Iniciante", title: "Apelido de Coluna", desc: "Qual palavra atribui um 'apelido' provisório a uma coluna?", code: "SELECT nome ___ nome_cliente FROM usuarios;", answers: ["AS", "as"], hint: "Inglês para 'como'.", explanation: "`AS` cria aliases para renomear colunas na exibição.", filename: "alias.sql" },
+                    { id: 25, tech: "SQL", category: "Iniciante", title: "Final de Comando SQL", desc: "Qual caractere obrigatório encerra as instruções SQL?", code: "SELECT * FROM produtos___", answers: [";"], hint: "Ponto e vírgula.", explanation: "O `;` marca o encerramento da instrução SQL.", filename: "ponto_virgula.sql" }
+                ],
+
+                html: [
+                    { id: 1, tech: "HTML", category: "Iniciante", title: "Título Principal", desc: "Qual a tag para o título de maior importância na página?", code: "<___>Meu Site Principal</h1 >", answers: ["h1"], hint: "Letra H seguida do número 1.", explanation: "`<h1>` cria o título principal e mais importante.", filename: "index.html" },
+                    { id: 2, tech: "HTML", category: "Iniciante", title: "Parágrafo de Texto", desc: "Qual tag é usada para definir um parágrafo de texto comum?", code: "<___>Este é um parágrafo de exemplo.</p>", answers: ["p"], hint: "Inicial de Parágrafo.", explanation: "`<p>` representa um parágrafo textual.", filename: "paragrafo.html" },
+                    { id: 3, tech: "HTML", category: "Iniciante", title: "Criar um Link", desc: "Qual tag cria um hiperlink para outra página?", code: "<___ href='https://google.com'>Ir para o Google</a>", answers: ["a"], hint: "Inicial de Anchor (âncora).", explanation: "`<a>` define hiperlinks usando o atributo href.", filename: "link.html" },
+                    { id: 4, tech: "HTML", category: "Iniciante", title: "Inserir Imagem", desc: "Qual tag exibe uma imagem na tela?", code: "<___ src='foto.jpg' alt='Minha Foto'>", answers: ["img"], hint: "Abreviação de imagem.", explanation: "`<img>` é a tag para incorporação de imagens.", filename: "imagem.html" },
+                    { id: 5, tech: "HTML", category: "Iniciante", title: "Quebra de Linha", desc: "Qual tag insere uma quebra de linha simples no texto?", code: "Primeira linha<___>Segunda linha", answers: ["br", "<br>", "<br/>"], hint: "Abreviação de Break.", explanation: "`<br>` pula uma linha dentro do bloco de texto.", filename: "quebra.html" },
+                    { id: 6, tech: "HTML", category: "Iniciante", title: "Lista Não Ordenada", desc: "Qual tag cria uma lista com marcadores de bolinhas?", code: "<___>\n  <li>Item 1</li>\n  <li>Item 2</li>\n</ul>", answers: ["ul"], hint: "Unordered List.", explanation: "`<ul>` organiza tópicos sem sequência numérica.", filename: "lista_ul.html" },
+                    { id: 7, tech: "HTML", category: "Iniciante", title: "Item de Lista", desc: "Qual tag representa cada item dentro de uma lista?", code: "<ul>\n  <___>Item da Lista</li >\n</ul>", answers: ["li"], hint: "List Item.", explanation: "`<li>` define o elemento de uma lista.", filename: "item_li.html" },
+                    { id: 8, tech: "HTML", category: "Iniciante", title: "Lista Numerada", desc: "Qual tag cria uma lista numerada em ordem (1, 2, 3...)?", code: "<___>\n  <li>Primeiro passo</li>\n  <li>Segundo passo</li>\n</ol>", answers: ["ol"], hint: "Ordered List.", explanation: "`<ol>` cria listas ordenadas numericamente.", filename: "lista_ol.html" },
+                    { id: 9, tech: "HTML", category: "Iniciante", title: "Botão Clicável", desc: "Qual tag cria um botão interativo?", code: "<___>Clique Aqui</button>", answers: ["button"], hint: "Inglês para 'botão'.", explanation: "`<button>` renderiza um botão clicável.", filename: "botao.html" },
+                    { id: 10, tech: "HTML", category: "Iniciante", title: "Divisão de Bloco (Div)", desc: "Qual a tag de contêiner de bloco genérico mais utilizada?", code: "<___ class='caixa'>Conteúdo aqui</div>", answers: ["div"], hint: "Abreviação de Division.", explanation: "`<div>` agrupa elementos em blocos.", filename: "div.html" },
+                    { id: 11, tech: "HTML", category: "Iniciante", title: "Texto em Negrito", desc: "Qual tag deixa um texto com destaque em negrito?", code: "Este texto está <___>fortalecido</strong>.", answers: ["strong", "b"], hint: "Significa 'forte'.", explanation: "`<strong>` enfatiza textos deixando-os em negrito.", filename: "negrito.html" },
+                    { id: 12, tech: "HTML", category: "Iniciante", title: "Campo de Entrada (Input)", desc: "Qual tag cria uma caixa para o usuário digitar dados?", code: "<___ type='text' placeholder='Digite seu nome'>", answers: ["input"], hint: "Entrada de formulário.", explanation: "`<input>` cria campos interativos de formulário.", filename: "input.html" },
+                    { id: 13, tech: "HTML", category: "Iniciante", title: "Formulário", desc: "Qual tag envolve campos de entrada para envio de dados?", code: "<___ action='/enviar'>\n  <input type='text'>\n</form>", answers: ["form"], hint: "Abreviação de Formulário.", explanation: "`<form>` agrupa campos para envio de informações.", filename: "form.html" },
+                    { id: 14, tech: "HTML", category: "Iniciante", title: "Cabeçalho de Página", desc: "Qual tag semântica representa o topo/cabeçalho de uma página?", code: "<___>\n  <h1>Logotipo do Site</h1>\n</header>", answers: ["header"], hint: "Inglês para cabeçalho.", explanation: "`<header>` define o cabeçalho do documento ou seção.", filename: "header.html" },
+                    { id: 15, tech: "HTML", category: "Iniciante", title: "Rodapé da Página", desc: "Qual tag semântica indica o rodapé da página?", code: "<___>\n  <p>© 2026 Todos os direitos reservados</p>\n</footer>", answers: ["footer"], hint: "Inglês para rodapé.", explanation: "`<footer>` identifica a área de rodapé.", filename: "footer.html" },
+                    { id: 16, tech: "HTML", category: "Iniciante", title: "Tag de Navegação", desc: "Qual tag envolve o menu principal de links do site?", code: "<___>\n  <a href='#'>Home</a> | <a href='#'>Contato</a>\n</nav>", answers: ["nav"], hint: "Abreviação de Navigation.", explanation: "`<nav>` agrupa links de navegação principal.", filename: "nav.html" },
+                    { id: 17, tech: "HTML", category: "Iniciante", title: "Tabela em HTML", desc: "Qual tag inicia a criação de uma tabela?", code: "<___>\n  <tr><td>Dado</td></tr>\n</table>", answers: ["table"], hint: "Inglês para tabela.", explanation: "`<table>` define a estrutura de tabela.", filename: "tabela.html" },
+                    { id: 18, tech: "HTML", category: "Iniciante", title: "Linha da Tabela", desc: "Qual tag define uma LINHA dentro de uma tabela?", code: "<table>\n  <___><td>Coluna 1</td></tr>\n</table>", answers: ["tr"], hint: "Table Row.", explanation: "`<tr>` cria uma nova linha na tabela.", filename: "linha_tr.html" },
+                    { id: 19, tech: "HTML", category: "Iniciante", title: "Célula/Coluna da Tabela", desc: "Qual tag cria uma célula de dados na tabela?", code: "<tr>\n  <___>Valor</td>\n</tr>", answers: ["td"], hint: "Table Data.", explanation: "`<td>` armazena dados em uma célula de tabela.", filename: "celula_td.html" },
+                    { id: 20, tech: "HTML", category: "Iniciante", title: "Atributo de Imagem Ausente", desc: "Qual atributo define o texto alternativo caso a imagem não carregue?", code: "<img src='foto.jpg' ___='Foto de um gato'>", answers: ["alt"], hint: "Abreviação de Alternativo.", explanation: "`alt` exibe texto explicativo e ajuda na acessibilidade.", filename: "alt.html" },
+                    { id: 21, tech: "HTML", category: "Iniciante", title: "Título da Aba do Navegador", desc: "Qual tag dentro do <head> dá nome à aba do navegador?", code: "<head>\n  <___>Título do meu site</title>\n</head>", answers: ["title"], hint: "Inglês para Título.", explanation: "`<title>` define o nome exibido na guia do navegador.", filename: "title.html" },
+                    { id: 22, tech: "HTML", category: "Iniciante", title: "Caixa de Seleção (Checkbox)", desc: "Qual valor do atributo 'type' cria uma caixinha de marcar?", code: "<input type='___'> Aceito os termos", answers: ["checkbox"], hint: "Inglês para caixa de checagem.", explanation: "`type='checkbox'` permite marcações de opção.", filename: "checkbox.html" },
+                    { id: 23, tech: "HTML", category: "Iniciante", title: "Texto em Itálico", desc: "Qual tag semântica deixa o texto enfatizado em itálico?", code: "Palavra em <___>itálico</em>.", answers: ["em", "i"], hint: "Abreviação de Emphasis.", explanation: "`<em>` dá ênfase itálica a uma palavra.", filename: "italico.html" },
+                    { id: 24, tech: "HTML", category: "Iniciante", title: "Atributo de Identificador Único", desc: "Qual atributo cria uma identificação ÚNICA para um elemento HTML?", code: "<div ___='menu-principal'></div>", answers: ["id"], hint: "Duas letras para Identificador.", explanation: "`id` atribui um identificador exclusivo ao elemento.", filename: "id.html" },
+                    { id: 25, tech: "HTML", category: "Iniciante", title: "Atributo de Classe", desc: "Qual atributo é usado para agrupar vários elementos para o CSS?", code: "<p ___='destaque'>Texto</p>", answers: ["class"], hint: "Inglês para Classe.", explanation: "`class` agrupa elementos com estilos CSS similares.", filename: "classe.html" }
+                ]
+            };
+
+            // PREENCHER DINAMICAMENTE ATÉ O NÍVEL 100 PARA CADA LINGUAGEM
+            Object.keys(db).forEach(lang => {
+                const currentList = db[lang];
+                for (let i = currentList.length + 1; i <= 100; i++) {
+                    let cat = i <= 25 ? "Iniciante" : i <= 50 ? "Intermediário" : i <= 75 ? "Avançado" : "Especialista";
+                    let name = lang.toUpperCase();
+                    
+                    let codeTemplate = "";
+                    let ans = [];
+                    let explanationStr = "";
+
+                    if(lang === 'python') {
+                        codeTemplate = `# Desafio Nível ${i} em Python\n# Complete o comando para este nível\nresultado = ___(dados)`;
+                        ans = ["len", "sum", "max", "min", "sorted", "type"];
+                        explanationStr = "Comando ou função fundamental para manipulação de estruturas em Python.";
+                    } else if(lang === 'sql') {
+                        codeTemplate = `-- Consulta Nível ${i} de SQL\nSELECT * FROM dados\n___ filtro = true;`;
+                        ans = ["WHERE", "where", "AND", "and", "HAVING", "having"];
+                        explanationStr = "Instrução estrutural utilizada para filtrar e processar tabelas relacionais.";
+                    } else {
+                        codeTemplate = `<!-- Estrutura HTML Nível ${i} -->\n<___ class="conteudo">\n  <p>Desafio do nível ${i}</p>\n</div>`;
+                        ans = ["div", "section", "article", "main", "aside"];
+                        explanationStr = "Tag semântica de marcação de bloco de estrutura web HTML5.";
+                    }
+
+                    currentList.push({
+                        id: i,
+                        tech: name,
+                        category: cat,
+                        title: `Desafio Prático #${i}`,
+                        desc: `Complete o código para resolver o desafio nível ${i} em ${name}.`,
+                        code: codeTemplate,
+                        answers: ans,
+                        hint: "Analise a sintaxe solicitada para esta etapa.",
+                        explanation: explanationStr,
+                        filename: `desafio_${i}.${lang === 'python' ? 'py' : lang === 'sql' ? 'sql' : 'html'}`
+                    });
+                }
+            });
+
+            // ESTADO GLOBAL DO APLICATIVO
+            let state = {
+                lang: 'python',
+                currentLevelIndex: 0,
+                completed: {
+                    python: new Set(),
+                    sql: new Set(),
+                    html: new Set()
+                },
+                score: 0,
+                streak: 0
+            };
+
+            // LOCALSTORAGE PERSISTÊNCIA
+            function loadStorage() {
+                const saved = localStorage.getItem('code_quest_multi_lang');
+                if (saved) {
+                    try {
+                        const parsed = JSON.parse(saved);
+                        state.lang = parsed.lang || 'python';
+                        state.currentLevelIndex = parsed.currentLevelIndex || 0;
+                        state.score = parsed.score || 0;
+                        state.streak = parsed.streak || 0;
+                        
+                        if (parsed.completed) {
+                            state.completed.python = new Set(parsed.completed.python || []);
+                            state.completed.sql = new Set(parsed.completed.sql || []);
+                            state.completed.html = new Set(parsed.completed.html || []);
+                        }
+                    } catch(e) {}
+                }
+            }
+
+            function saveStorage() {
+                localStorage.setItem('code_quest_multi_lang', JSON.stringify({
+                    lang: state.lang,
+                    currentLevelIndex: state.currentLevelIndex,
+                    score: state.score,
+                    streak: state.streak,
+                    completed: {
+                        python: Array.from(state.completed.python),
+                        sql: Array.from(state.completed.sql),
+                        html: Array.from(state.completed.html)
+                    }
+                }));
+            }
+
+            // DOM ELEMENTS
+            const currentLevelNum = document.getElementById('currentLevelNum');
+            const techBadge = document.getElementById('techBadge');
+            const difficultyBadge = document.getElementById('difficultyBadge');
+            const questionTitle = document.getElementById('questionTitle');
+            const questionDesc = document.getElementById('questionDesc');
+            const filenameText = document.getElementById('filenameText');
+            const codeSnippet = document.getElementById('codeSnippet');
+            const answerInput = document.getElementById('answerInput');
+            const answerForm = document.getElementById('answerForm');
+            const hintBtn = document.getElementById('hintBtn');
+            const revealBtn = document.getElementById('revealBtn');
+            const hintBox = document.getElementById('hintBox');
+            const hintText = document.getElementById('hintText');
+            const feedbackContainer = document.getElementById('feedbackContainer');
+            const feedbackIcon = document.getElementById('feedbackIcon');
+            const feedbackTitle = document.getElementById('feedbackTitle');
+            const feedbackText = document.getElementById('feedbackText');
+            const explanationText = document.getElementById('explanationText');
+            const nextLevelFeedbackBtn = document.getElementById('nextLevelFeedbackBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const scoreCount = document.getElementById('scoreCount');
+            const streakCount = document.getElementById('streakCount');
+            const completedCount = document.getElementById('completedCount');
+            const progressBar = document.getElementById('progressBar');
+            const levelsSidebar = document.getElementById('levelsSidebar');
+            const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+            const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+            const levelsGrid = document.getElementById('levelsGrid');
+            const resetProgressBtn = document.getElementById('resetProgressBtn');
+
+            // RENDERIZAR NÍVEL
+            function renderLevel() {
+                const currentList = db[state.lang];
+                const lvl = currentList[state.currentLevelIndex];
+
+                currentLevelNum.innerText = lvl.id;
+                
+                let iconClass = state.lang === 'python' ? 'fa-brands fa-python' : state.lang === 'sql' ? 'fa-solid fa-database' : 'fa-brands fa-html5';
+                techBadge.innerHTML = `<i class="${iconClass}"></i> ${lvl.tech}`;
+                
+                difficultyBadge.innerText = lvl.category;
+                questionTitle.innerText = `${lvl.id}. ${lvl.title}`;
+                questionDesc.innerText = lvl.desc;
+                filenameText.innerText = lvl.filename;
+
+                const formattedCode = lvl.code.replace('___', '<span class="bg-blue-600/30 text-blue-300 border-b-2 border-blue-400 px-2 py-0.5 rounded font-bold animate-pulse">___</span>');
+                codeSnippet.innerHTML = formattedCode;
+
+                answerInput.value = '';
+                answerInput.focus();
+                hintBox.classList.add('hidden');
+                feedbackContainer.classList.add('hidden');
+
+                prevBtn.disabled = state.currentLevelIndex === 0;
+                nextBtn.disabled = state.currentLevelIndex === currentList.length - 1;
+
+                updateStatsDisplay();
+                renderSidebarGrid();
+                updateTabUI();
+            }
+
+            function updateTabUI() {
+                document.querySelectorAll('.lang-tab').forEach(tab => {
+                    if (tab.dataset.lang === state.lang) {
+                        tab.className = "lang-tab flex-1 py-2 px-4 rounded-lg text-xs md:text-sm font-semibold transition flex items-center justify-center gap-2 bg-blue-600 text-white shadow";
+                    } else {
+                        tab.className = "lang-tab flex-1 py-2 px-4 rounded-lg text-xs md:text-sm font-semibold transition flex items-center justify-center gap-2 bg-slate-800 text-slate-400 hover:text-slate-200";
+                    }
+                });
+            }
+
+            function updateStatsDisplay() {
+                scoreCount.innerText = state.score;
+                streakCount.innerText = state.streak;
+                
+                const doneSet = state.completed[state.lang];
+                completedCount.innerText = doneSet.size;
+                
+                const pct = (doneSet.size / 100) * 100;
+                progressBar.style.width = `${pct}%`;
+            }
+
+            // CHECAR RESPOSTA
+            answerForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const inputVal = answerInput.value.trim();
+                const currentList = db[state.lang];
+                const lvl = currentList[state.currentLevelIndex];
+
+                if (!inputVal) return;
+
+                const isCorrect = lvl.answers.some(ans => ans.toLowerCase() === inputVal.toLowerCase());
+
+                feedbackContainer.classList.remove('hidden', 'bg-emerald-950/40', 'border-emerald-500/40', 'bg-rose-950/40', 'border-rose-500/40');
+
+                if (isCorrect) {
+                    if (!state.completed[state.lang].has(lvl.id)) {
+                        state.completed[state.lang].add(lvl.id);
+                        state.score += 100;
+                        state.streak += 1;
+                    }
+                    saveStorage();
+                    updateStatsDisplay();
+
+                    feedbackContainer.classList.add('bg-emerald-950/40', 'border-emerald-500/40', 'glow-success');
+                    feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+                    feedbackTitle.innerText = "Excelente! Código Correto!";
+                    feedbackTitle.className = "font-bold text-lg mb-1 text-emerald-400";
+                    feedbackText.innerText = `Você acertou preenchendo perfeitamente com '${inputVal}'.`;
+                    explanationText.innerHTML = lvl.explanation;
+                } else {
+                    state.streak = 0;
+                    saveStorage();
+                    updateStatsDisplay();
+
+                    feedbackContainer.classList.add('bg-rose-950/40', 'border-rose-500/40', 'glow-error');
+                    feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i>`;
+                    feedbackTitle.innerText = "Sintaxe Incorreta";
+                    feedbackTitle.className = "font-bold text-lg mb-1 text-rose-400";
+                    feedbackText.innerText = `O valor '${inputVal}' não responde a esta lacuna. Tente novamente!`;
+                    explanationText.innerHTML = `Lembre-se das regras fundamentais de sintaxe da linguagem ${lvl.tech}.`;
+                }
+            });
+
+            // TROCAR DE LINGUAGEM
+            document.querySelectorAll('.lang-tab').forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    const targetLang = e.currentTarget.dataset.lang;
+                    if (targetLang !== state.lang) {
+                        state.lang = targetLang;
+                        state.currentLevelIndex = 0;
+                        saveStorage();
+                        renderLevel();
+                    }
+                });
+            });
+
+            // DICA E REVELAÇÃO
+            hintBtn.addEventListener('click', () => {
+                const lvl = db[state.lang][state.currentLevelIndex];
+                hintText.innerText = lvl.hint;
+                hintBox.classList.toggle('hidden');
+            });
+
+            revealBtn.addEventListener('click', () => {
+                const lvl = db[state.lang][state.currentLevelIndex];
+                answerInput.value = lvl.answers[0];
+            });
+
+            // NAVEGAÇÃO
+            nextLevelFeedbackBtn.addEventListener('click', () => {
+                if (state.currentLevelIndex < 99) {
+                    state.currentLevelIndex++;
+                    saveStorage();
+                    renderLevel();
+                }
+            });
+
+            nextBtn.addEventListener('click', () => {
+                if (state.currentLevelIndex < 99) {
+                    state.currentLevelIndex++;
+                    saveStorage();
+                    renderLevel();
+                }
+            });
+
+            prevBtn.addEventListener('click', () => {
+                if (state.currentLevelIndex > 0) {
+                    state.currentLevelIndex--;
+                    saveStorage();
+                    renderLevel();
+                }
+            });
+
+            // DRAWER SIDEBAR
+            toggleSidebarBtn.addEventListener('click', () => {
+                levelsSidebar.classList.remove('translate-x-full');
+            });
+
+            closeSidebarBtn.addEventListener('click', () => {
+                levelsSidebar.classList.add('translate-x-full');
+            });
+
+            function renderSidebarGrid(filter = 'all') {
+                levelsGrid.innerHTML = '';
+                const currentList = db[state.lang];
+                
+                currentList.forEach((lvl, idx) => {
+                    if (filter === 'basic' && (lvl.id < 1 || lvl.id > 25)) return;
+                    if (filter === 'inter' && (lvl.id < 26 || lvl.id > 50)) return;
+                    if (filter === 'adv' && (lvl.id < 51 || lvl.id > 75)) return;
+                    if (filter === 'extra' && (lvl.id < 76 || lvl.id > 100)) return;
+
+                    const isDone = state.completed[state.lang].has(lvl.id);
+                    const isCurrent = state.currentLevelIndex === idx;
+
+                    const btn = document.createElement('button');
+                    btn.className = `p-2 rounded-lg text-xs font-bold transition flex flex-col items-center justify-center border ${
+                        isCurrent ? 'bg-blue-600 text-white border-blue-400 ring-2 ring-blue-400/50' :
+                        isDone ? 'bg-emerald-950/60 text-emerald-300 border-emerald-600/50 hover:bg-emerald-900/50' :
+                        'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-slate-200'
+                    }`;
+
+                    btn.innerHTML = `
+                        <span>${lvl.id}</span>
+                        <i class="fa-solid ${isDone ? 'fa-check text-[10px] mt-0.5' : 'fa-code text-[9px] opacity-40 mt-0.5'}"></i>
+                    `;
+
+                    btn.addEventListener('click', () => {
+                        state.currentLevelIndex = idx;
+                        saveStorage();
+                        renderLevel();
+                        levelsSidebar.classList.add('translate-x-full');
+                    });
+
+                    levelsGrid.appendChild(btn);
+                });
+            }
+
+            // FILTROS SIDEBAR
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    document.querySelectorAll('.filter-btn').forEach(b => {
+                        b.classList.remove('bg-blue-600', 'text-white', 'active');
+                        b.classList.add('bg-slate-800', 'text-slate-300');
+                    });
+                    e.target.classList.remove('bg-slate-800', 'text-slate-300');
+                    e.target.classList.add('bg-blue-600', 'text-white', 'active');
+
+                    renderSidebarGrid(e.target.dataset.filter);
+                });
+            });
+
+            // RESET PROGRESSO
+            resetProgressBtn.addEventListener('click', () => {
+                if (confirm(`Tem certeza que deseja reiniciar o progresso de ${state.lang.toUpperCase()}?`)) {
+                    state.completed[state.lang].clear();
+                    state.currentLevelIndex = 0;
+                    saveStorage();
+                    renderLevel();
+                }
+            });
+
+            // INICIALIZAÇÃO
+            loadStorage();
+            renderLevel();
+        });
+    </script>
+</body>
+</html>
