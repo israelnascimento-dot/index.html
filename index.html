@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Code Quest - 300 Exercícios Resolvidos de Python e Dev</title>
+    <title>Tech Code Quest - 300 Níveis (Python, SQL & HTML)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -76,9 +76,9 @@
                 </div>
                 <div>
                     <h1 class="font-bold text-lg leading-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
-                        Code Quest: Python 300 Exercícios
+                        Code Quest: Data & Dev Pro
                     </h1>
-                    <p class="text-xs text-slate-400">Baseado no Livro de Fernando Feltrin & Trilhas Dev</p>
+                    <p class="text-xs text-slate-400">300 Desafios Práticos por Linguagem</p>
                 </div>
             </div>
 
@@ -119,13 +119,10 @@
             <!-- Language Selector Tabs -->
             <div class="mb-5 flex items-center gap-2 p-1.5 bg-slate-900 border border-slate-800 rounded-xl overflow-x-auto">
                 <button data-lang="python" class="lang-tab flex-1 py-2 px-4 rounded-lg text-xs md:text-sm font-semibold transition flex items-center justify-center gap-2 bg-blue-600 text-white shadow">
-                    <i class="fa-brands fa-python text-base"></i> Python (300 Exercícios)
+                    <i class="fa-brands fa-python text-base"></i> Python (300 Exercícios - Livro Feltrin)
                 </button>
                 <button data-lang="sql" class="lang-tab flex-1 py-2 px-4 rounded-lg text-xs md:text-sm font-semibold transition flex items-center justify-center gap-2 bg-slate-800 text-slate-400 hover:text-slate-200">
-                    <i class="fa-solid fa-database text-base"></i> SQL Analytics
-                </button>
-                <button data-lang="html" class="lang-tab flex-1 py-2 px-4 rounded-lg text-xs md:text-sm font-semibold transition flex items-center justify-center gap-2 bg-slate-800 text-slate-400 hover:text-slate-200">
-                    <i class="fa-brands fa-html5 text-base"></i> HTML & Front-End
+                    <i class="fa-solid fa-database text-base"></i> SQL Moderno (300 Atividades Completo)
                 </button>
             </div>
             
@@ -188,12 +185,12 @@
                         <input 
                             type="text" 
                             id="answerInput" 
-                            placeholder="Digite o código exato para substituir '___'" 
+                            placeholder="Digite aqui o código que falta na lacuna '___'" 
                             class="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-mono"
                             autocomplete="off"
                             spellcheck="false"
                         >
-                        <span class="absolute right-3 top-3 text-xs text-slate-500 hidden sm:inline">Enter ↵</span>
+                        <span class="absolute right-3 top-3 text-xs text-slate-500 hidden sm:inline">Pressione Enter ↵</span>
                     </div>
                     <button 
                         type="submit" 
@@ -230,7 +227,7 @@
                         <h3 id="feedbackTitle" class="font-bold text-lg mb-1"></h3>
                         <p id="feedbackText" class="text-sm leading-relaxed mb-3 text-slate-300"></p>
                         <div id="explanationBox" class="p-3 bg-slate-950/60 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1">
-                            <span class="font-semibold text-blue-400 uppercase tracking-wider text-[10px] block">Explicação Didática & Comentada:</span>
+                            <span class="font-semibold text-blue-400 uppercase tracking-wider text-[10px] block">Explicação Didática:</span>
                             <div id="explanationText"></div>
                         </div>
                         <button id="nextLevelFeedbackBtn" class="mt-4 px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow-md transition flex items-center space-x-2">
@@ -277,100 +274,81 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', function() {
 
-            // BANCO DE DADOS DINÂMICO E DIVERSIFICADO DE EXERCÍCIOS (1 a 300)
-            const db = { python: [], sql: [], html: [] };
-            const techNames = { python: "PYTHON", sql: "SQL", html: "HTML" };
+            const db = { python: [], sql: [] };
+            const techNames = { python: "PYTHON", sql: "SQL" };
 
-            // BAZA DE DADOS EXPOSITIVA DE CONCEITOS E COMANDOS PYTHON
+            // BASE DE TEMPLATES DE EXERCÍCIOS PARA PYTHON (LIVRO 300 EXERCÍCIOS RESOLVIDOS)
             const pyTemplates = [
-                // 1-50: Sintaxe, Tipos, Variáveis, Strings e Operadores
-                { cmds: ["print"], topic: "Exibir Mensagem", code: "___('Iniciando script')", ans: ["print"], hint: "Função nativa para imprimir dados no console.", exp: "A função `print()` exibe valores de saída no terminal." },
-                { cmds: ["type"], topic: "Checar Tipo de Dado", code: "v = 42\nprint(___(v))", ans: ["type"], hint: "Verifica a classe/tipo de uma variável.", exp: "A função `type()` retorna o tipo do dado passado como argumento." },
-                { cmds: ["input"], topic: "Entrada de Dados", code: "nome = ___('Digite seu nome: ')", ans: ["input"], hint: "Captura dados digitados pelo usuário.", exp: "`input()` lê entradas em formato texto (str)." },
-                { cmds: ["int"], topic: "Casting para Inteiro", code: "num = ___('15') + 5", ans: ["int"], hint: "Converte de texto para número inteiro.", exp: "`int()` realiza o casting para números inteiros." },
-                { cmds: ["float"], topic: "Casting para Float", code: "preco = ___('19.99')", ans: ["float"], hint: "Converte de texto para ponto flutuante.", exp: "`float()` converte valores numéricos reais com casas decimais." },
-                { cmds: ["str"], topic: "Casting para String", code: "texto = ___(100)", ans: ["str"], hint: "Converte valores numéricos para texto.", exp: "`str()` transforma qualquer valor em uma representação textual." },
-                { cmds: ["len"], topic: "Comprimento de Coleção/Texto", code: "total = ___('Python Data Science')", ans: ["len"], hint: "Retorna a quantidade de elementos ou caracteres.", exp: "`len()` conta o total de caracteres de uma string ou itens de uma coleção." },
-                { cmds: ["upper"], topic: "String Maiúscula", code: "txt = 'python'.___()", ans: ["upper"], hint: "Converte texto para maiúsculas.", exp: "O método `.upper()` deixa todas as letras em maiúsculo." },
-                { cmds: ["lower"], topic: "String Minúscula", code: "txt = 'DATA'.___()", ans: ["lower"], hint: "Converte texto para minúsculas.", exp: "O método `.lower()` transforma caracteres em minúsculos." },
-                { cmds: ["replace"], topic: "Substituir Texto", code: "txt = 'Gato'.___('G', 'R')", ans: ["replace"], hint: "Substitui ocorrências em uma string.", exp: "O método `.replace(antigo, novo)` substitui caracteres em um texto." },
-                { cmds: ["strip"], topic: "Remover Espaços das Pontas", code: "txt = '  dados  '.___()", ans: ["strip"], hint: "Remove espaços em branco antes e depois do texto.", exp: "O método `.strip()` elimina caracteres invisíveis e espaços das extremidades." },
-                { cmds: ["split"], topic: "Divisão de String", code: "palavras = 'a,b,c'.___(',')", ans: ["split"], hint: "Divide um texto em lista dado um delimitador.", exp: "O método `.split()` fragmenta a string gerando uma lista." },
-                { cmds: ["join"], topic: "Unir Elementos de Lista", code: "frase = ' '.___(['Olá', 'Mundo'])", ans: ["join"], hint: "Junta elementos de uma lista com um separador.", exp: "O método `.join()` concatena iteráveis usando a string base como separador." },
-                { cmds: ["count"], topic: "Contar Ocorrências", code: "qtd = 'banana'.___('a')", ans: ["count"], hint: "Conta a frequência de um caractere ou substring.", exp: "O método `.count()` retorna a contagem exata de ocorrências." },
-                { cmds: ["startswith"], topic: "Verificar Início de Texto", code: "ok = 'Python'.___('Py')", ans: ["startswith"], hint: "Testa se a string começa com determinado prefixo.", exp: "O método `.startswith()` retorna True se o texto iniciar com o prefixo indicado." },
-                { cmds: ["endswith"], topic: "Verificar Fim de Texto", code: "ok = 'arquivo.py'.___('.py')", ans: ["endswith"], hint: "Testa se a string termina com determinado sufixo.", exp: "O método `.endswith()` checa a terminação da string." },
-                { cmds: ["find"], topic: "Encontrar Índice em Texto", code: "pos = 'Python'.___('th')", ans: ["find"], hint: "Procura a posição de uma substring.", exp: "O método `.find()` retorna a posição inicial da substring ou -1." },
-                { cmds: ["//"], topic: "Divisão Inteira", code: "res = 17 ___ 5", ans: ["//"], hint: "Operador de divisão truncada sem casas decimais.", exp: "O operador `//` realiza a divisão descartando a parte fracionária." },
-                { cmds: ["%"], topic: "Operador Resto (Módulo)", code: "resto = 10 ___ 3", ans: ["%"], hint: "Retorna o resto numérico da divisão.", exp: "O operador `%` é utilizado para encontrar o resto de uma divisão." },
-                { cmds: ["**"], topic: "Operador de Potência", code: "cubo = 3 ___ 3", ans: ["**"], hint: "Eleva o valor base a um expoente.", exp: "O operador `**` efetua cálculos de potenciação." },
-
-                // 51-100: Estruturas Condicionais e Lógica
-                { cmds: ["if"], topic: "Condicional Simples", code: "x = 10\n___ x > 5:\n    print('Maior')", ans: ["if"], hint: "Testa se a condição inicial é verdadeira.", exp: "`if` inicia a verificação de um bloco condicional." },
-                { cmds: ["else"], topic: "Condicional Alternativa", code: "if x > 10:\n    print('A')\n___:\n    print('B')", ans: ["else"], hint: "Executado quando a condição do `if` é falsa.", exp: "`else` executa quando nenhuma condição anterior foi atingida." },
-                { cmds: ["elif"], topic: "Condição Encadeada", code: "if x == 1:\n    pass\n___ x == 2:\n    pass", ans: ["elif"], hint: "Utilizado para testar múltiplas alternativas sequenciais.", exp: "`elif` é a junção de else + if para múltiplos cenários." },
-                { cmds: ["and"], topic: "Operador Lógico E", code: "if idade >= 18 ___ tem_cnh:\n    print('OK')", ans: ["and"], hint: "Exige que ambas as condições sejam verdadeiras.", exp: "`and` retorna True apenas se ambos os lados forem verdadeiros." },
-                { cmds: ["or"], topic: "Operador Lógico OU", code: "if sabado ___ domingo:\n    print('Fim de semana')", ans: ["or"], hint: "Retorna verdadeiro se ao menos uma condição for True.", exp: "`or` avalia como True caso uma das partes seja verdadeira." },
-                { cmds: ["not"], topic: "Operador Negação Lógica", code: "if ___ chovendo:\n    print('Sair')", ans: ["not"], hint: "Inverte o valor booleano da expressão.", exp: "`not` inverte um booleano (True vira False)." },
-                { cmds: ["in"], topic: "Operador de Pertencimento", code: "if 'a' ___ 'banana':\n    print('Contém')", ans: ["in"], hint: "Verifica se um item está presente na coleção ou texto.", exp: "`in` checa a existência de um elemento em uma sequência." },
-                { cmds: ["not in"], topic: "Operador de Ausência", code: "if 'z' ___ 'banana':\n    print('Ausente')", ans: ["not in"], hint: "Testa se o elemento NÃO está presente na coleção.", exp: "`not in` verifica a ausência do elemento dentro da sequência." },
-                { cmds: ["is"], topic: "Operador de Identidade", code: "val = None\nif val ___ None:\n    print('Nulo')", ans: ["is"], hint: "Verifica se duas variáveis apontam para o mesmo objeto na memória.", exp: "`is` compara a identidade na memória dos objetos." },
-                { cmds: ["ternario"], topic: "Operador Ternário", code: "status = 'Par' ___ n % 2 == 0 else 'Ímpar'", ans: ["if"], hint: "Sintaxe inline para tomada de decisão em uma linha.", exp: "No ternário inline em Python usa-se o padrão `valor_if if condicao else valor_else`." },
-
-                // 101-150: Laços de Repetição
-                { cmds: ["for"], topic: "Laço Determinado", code: "___ item in [1, 2, 3]:\n    print(item)", ans: ["for"], hint: "Itera sobre uma sequência de elementos.", exp: "O laço `for` varre sequências item por item." },
-                { cmds: ["while"], topic: "Laço Indeterminado", code: "i = 0\n___ i < 5:\n    i += 1", ans: ["while"], hint: "Repete enquanto a condição permanecer verdadeira.", exp: "`while` repete a execução enquanto a condição lógica for True." },
-                { cmds: ["range"], topic: "Gerador de Intervalo", code: "for n in ___(1, 6):\n    print(n)", ans: ["range"], hint: "Gera uma sequência de números inteiros.", exp: "`range(inicio, fim)` produz uma sequência de números." },
-                { cmds: ["break"], topic: "Interromper Repetição", code: "while True:\n    if ok:\n        ___", ans: ["break"], hint: "Para imediatamente a execução do loop.", exp: "`break` encerra abruptamente o laço." },
-                { cmds: ["continue"], topic: "Avançar para Próxima Iteração", code: "for i in range(10):\n    if i % 2 == 0:\n        ___\n    print(i)", ans: ["continue"], hint: "Pula para a próxima rodada do laço.", exp: "`continue` interrompe o ciclo atual e pula para a iteração seguinte." },
-                { cmds: ["enumerate"], topic: "Iteração com Índices", code: "for idx, val in ___(lista):\n    print(idx, val)", ans: ["enumerate"], hint: "Retorna pares de (índice, elemento).", exp: "`enumerate()` adiciona um contador indexado ao iterável." },
-                { cmds: ["zip"], topic: "Iteração Pareada", code: "for n, a in ___(nomes, idades):\n    print(n, a)", ans: ["zip"], hint: "Agrupa elementos correspondentes de múltiplas listas.", exp: "`zip()` combina múltiplos iteráveis elemento a elemento." },
-                { cmds: ["pass"], topic: "Instrução Nula (Placeholder)", code: "if ativo:\n    ___", ans: ["pass"], hint: "Atua como comando nulo sem alterar a execução.", exp: "`pass` é usado como preenchimento sintático onde um bloco de código é exigido." },
-
-                // 151-200: Coleções (Listas, Tuplas, Dicionários e Sets)
-                { cmds: ["append"], topic: "Adicionar na Lista", code: "lista = [1, 2]\nlista.___(3)", ans: ["append"], hint: "Insere um elemento no final da lista.", exp: "`.append()` insere o valor fornecido ao término da lista." },
-                { cmds: ["extend"], topic: "Expandir Lista", code: "a = [1, 2]\na.___([3, 4])", ans: ["extend"], hint: "Adiciona múltiplos elementos de uma outra lista no final.", exp: "`.extend()` anexa todos os itens de um iterável na lista." },
-                { cmds: ["pop"], topic: "Remover por Índice", code: "item = lista.___()", ans: ["pop"], hint: "Remove e retorna o último item da lista.", exp: "`.pop()` retira o último item (ou no índice informado) da lista." },
-                { cmds: ["remove"], topic: "Remover por Valor", code: "frutas.___( 'maçã' )", ans: ["remove"], hint: "Busca e remove a primeira ocorrência do valor especificado.", exp: "`.remove(valor)` apaga a primeira ocorrência do elemento indicado." },
-                { cmds: ["sort"], topic: "Ordenar Lista", code: "numeros = [3, 1, 2]\nnumeros.___()", ans: ["sort"], hint: "Ordena os elementos da própria lista em ordem crescente.", exp: "`.sort()` reorganiza a própria lista em ordem ascendente." },
-                { cmds: ["reverse"], topic: "Inverter Lista", code: "lista.___()", ans: ["reverse"], hint: "Inverte a ordem atual dos itens da lista.", exp: "`.reverse()` inverte a sequência dos elementos in-place." },
-                { cmds: ["list_comp"], topic: "List Comprehension", code: "quads = [x**2 ___ x in range(5)]", ans: ["for"], hint: "Criação concisa de listas com loop na mesma linha.", exp: "List Comprehension aplica uma expressão a cada elemento do iterável." },
-                { cmds: ["get"], topic: "Busca Segura em Dicionário", code: "v = dic.___('chave', 'Padrão')", ans: ["get"], hint: "Retorna o valor da chave sem causar KeyError caso não exista.", exp: "`.get()` recupera o valor de uma chave com segurança contra exceções." },
-                { cmds: ["keys"], topic: "Chaves do Dicionário", code: "todas_chaves = dic.___()", ans: ["keys"], hint: "Retorna todas as chaves registradas no dicionário.", exp: "`.keys()` extrai uma visão de todas as chaves do dicionário." },
-                { cmds: ["values"], topic: "Valores do Dicionário", code: "todos_valores = dic.___()", ans: ["values"], hint: "Retorna todos os valores salvos no dicionário.", exp: "`.values()` retorna a coleção contendo os valores do dicionário." },
-                { cmds: ["items"], topic: "Itens do Dicionário", code: "for k, v in dic.___():\n    print(k, v)", ans: ["items"], hint: "Retorna pares de (chave, valor) do dicionário.", exp: "`.items()` retorna tuplas com as duplas de chaves e seus respectivos valores." },
-                { cmds: ["add"], topic: "Adicionar no Set", code: "conjunto = {1, 2}\nconjunto.___(3)", ans: ["add"], hint: "Insere um elemento único no conjunto.", exp: "`.add()` insere um item no conjunto garantindo a ausência de duplicatas." },
-                { cmds: ["intersection"], topic: "Interseção de Sets", code: "comuns = set1.___(set2)", ans: ["intersection"], hint: "Retorna apenas elementos presentes em ambos os conjuntos.", exp: "`.intersection()` gera um conjunto com os itens presentes em ambas as coleções." },
-
-                // 201-250: Funções e Programação Funcional
-                { cmds: ["def"], topic: "Definição de Função", code: "___ calcular(a, b):\n    return a + b", ans: ["def"], hint: "Declara um bloco de função.", exp: "`def` cria e nomeia uma função em Python." },
-                { cmds: ["return"], topic: "Retorno da Função", code: "def acao():\n    ___ 'Pronto'", ans: ["return"], hint: "Envia o resultado da função de volta.", exp: "`return` devolve um valor de saída e finaliza a execução da função." },
-                { cmds: ["lambda"], topic: "Função Anônima (Inline)", code: "soma = ___ a, b: a + b", ans: ["lambda"], hint: "Cria funções pequenas e sem nome em uma linha.", exp: "`lambda` expressa funções simples de linha única." },
-                { cmds: ["map"], topic: "Transformação com Map", code: "nums = ___(int, ['1', '2', '3'])", ans: ["map"], hint: "Aplica uma função a todos os itens do iterável.", exp: "`map(funcao, iteravel)` aplica uma transformação a cada elemento." },
-                { cmds: ["filter"], topic: "Filtragem com Filter", code: "pares = ___(lambda x: x % 2 == 0, lista)", ans: ["filter"], hint: "Filtra itens que satisfazem uma condição booleana.", exp: "`filter()` seleciona apenas elementos onde a função retorna True." },
-                { cmds: ["*args"], topic: "Argumentos Posicionais Variáveis", code: "def f(*___):\n    print(args)", ans: ["args"], hint: "Convenção para capturar múltiplos argumentos posicionais em tupla.", exp: "`*args` aceita uma quantidade ilimitada de argumentos posicionais." },
-                { cmds: ["**kwargs"], topic: "Argumentos Nomeados Variáveis", code: "def f(**___):\n    print(kwargs)", ans: ["kwargs"], hint: "Convenção para capturar argumentos de palavra-chave em dicionário.", exp: "`**kwargs` agrupa argumentos nomeados extras em um dicionário." },
-
-                // 251-300: Módulos, Arquivos, Exceções, NumPy e Pandas
-                { cmds: ["open"], topic: "Abertura de Arquivo", code: "f = ___('dados.txt', 'r')", ans: ["open"], hint: "Abre um arquivo para leitura ou escrita.", exp: "`open()` abre arquivos no sistema do disco rígido." },
-                { cmds: ["with"], topic: "Gerenciador de Contexto de Arquivo", code: "___ open('dados.txt') as f:\n    txt = f.read()", ans: ["with"], hint: "Garante o encerramento correto do recurso ao finalizar.", exp: "`with` garante que o arquivo será fechado automaticamente." },
-                { cmds: ["read"], topic: "Ler Todo o Arquivo", code: "conteudo = f.___()", ans: ["read"], hint: "Lê todo o conteúdo textual do arquivo de uma vez.", exp: "`.read()` carrega o texto inteiro do arquivo aberto." },
-                { cmds: ["write"], topic: "Escrever no Arquivo", code: "f.___('Nova linha\\n')", ans: ["write"], hint: "Escreve uma string no arquivo aberto.", exp: "`.write()` grava a string informada dentro do arquivo." },
-                { cmds: ["try"], topic: "Bloco de Teste de Exceção", code: "___:\n    res = 10 / 0\nexcept:\n    pass", ans: ["try"], hint: "Isola código suscetível a erros para tratamento.", exp: "`try` marca o bloco monitorado contra erros e exceções." },
-                { cmds: ["except"], topic: "Captura de Erros", code: "try:\n    pass\n___ ZeroDivisionError:\n    print('Erro')", ans: ["except"], hint: "Trata exceções capturadas no bloco try.", exp: "`except` executa ações corretivas quando um erro específico ocorre." },
-                { cmds: ["finally"], topic: "Bloco de Finalização Sempre Executado", code: "try:\n    pass\n___:\n    print('Sempre roda')", ans: ["finally"], hint: "Executa independentemente de haver exceções ou não.", exp: "`finally` é executado obrigatoriamente ao fim do try/except." },
-                { cmds: ["import"], topic: "Importar Módulos", code: "___ math\nprint(math.pi)", ans: ["import"], hint: "Carrega bibliotecas externas e módulos.", exp: "`import` adiciona bibliotecas no escopo do programa." },
-                { cmds: ["randint"], topic: "Sorteio de Inteiro no Random", code: "import random\nn = random.___ (1, 10)", ans: ["randint"], hint: "Gera número inteiro aleatório dentro do intervalo inclusivo.", exp: "`random.randint(a, b)` retorna um número inteiro aleatório entre a e b." },
-                { cmds: ["numpy_array"], topic: "Vetor/Matriz no NumPy", code: "import numpy as np\narr = np.___([1, 2, 3])", ans: ["array"], hint: "Cria um array otimizado do NumPy.", exp: "`np.array()` cria estruturas multidimensionais ultraeficientes." },
-                { cmds: ["read_csv"], topic: "Importar CSV com Pandas", code: "import pandas as pd\ndf = pd.___('dados.csv')", ans: ["read_csv"], hint: "Lê arquivos delimitados por vírgula no Pandas.", exp: "`pd.read_csv()` lê e cria um DataFrame Pandas." },
-                { cmds: ["head"], topic: "Primeiras Linhas do DataFrame", code: "top5 = df.___()", ans: ["head"], hint: "Exibe os 5 primeiros registros do DataFrame.", exp: "`.head()` retorna as primeiras 5 linhas de um DataFrame." },
-                { cmds: ["describe"], topic: "Estatísticas do DataFrame", code: "resumo = df.___()", ans: ["describe"], hint: "Gera estatísticas descritivas das colunas numéricas.", exp: "`.describe()` exibe médias, desvios e percentis dos dados." }
+                { topic: "Impressão de Mensagens", code: "___('Iniciando análise de dados')", ans: ["print"], hint: "Função nativa para exibir texto no terminal.", exp: "`print()` exibe valores e mensagens no console." },
+                { topic: "Entrada de Dados", code: "nome = ___('Digite seu nome: ')", ans: ["input"], hint: "Função para captura de dados informados pelo usuário.", exp: "`input()` lê dados inseridos via teclado." },
+                { topic: "Conversão para Inteiro", code: "idade = ___(input('Sua idade: '))", ans: ["int"], hint: "Converte a string capturada para número inteiro.", exp: "`int()` realiza o typecasting para inteiro." },
+                { topic: "Conversão para Float", code: "preco = ___('19.99')", ans: ["float"], hint: "Converte o valor para ponto flutuante.", exp: "`float()` converte texto/números em ponto flutuante." },
+                { topic: "Medir Comprimento", code: "tamanho = ___('Python')", ans: ["len"], hint: "Mede o comprimento de um objeto ou texto.", exp: "`len()` retorna o número de elementos ou caracteres." },
+                { topic: "Formatting Strings (F-String)", code: "print(___ 'Olá, {nome}')", ans: ["f"], hint: "Prefixo para interpolação direta de variáveis.", exp: "O prefixo `f` permite formatar variáveis em strings." },
+                { topic: "Caixa Alta em Strings", code: "texto = 'python'.___()", ans: ["upper"], hint: "Converte a string para letras maiúsculas.", exp: "`.upper()` converte todos os caracteres para maiúsculo." },
+                { topic: "Caixa Baixa em Strings", code: "texto = 'PYTHON'.___()", ans: ["lower"], hint: "Converte a string para letras minúsculas.", exp: "`.lower()` converte os caracteres para minúsculo." },
+                { topic: "Substituição em Strings", code: "novo = 'banana'.___('a', 'o')", ans: ["replace"], hint: "Substitui caracteres especificamente.", exp: "`.replace(antigo, novo)` altera trechos de texto." },
+                { topic: "Divisão de Strings", code: "lista = 'a,b,c'.___(',')", ans: ["split"], hint: "Divide o texto gerando uma lista.", exp: "`.split(delimitador)` recorta a string em uma lista." },
+                { topic: "Estrutura IF", code: "___ nota >= 7:\n    print('Aprovado')", ans: ["if"], hint: "Inicia a validação condicional.", exp: "`if` executa se a condição for verdadeira." },
+                { topic: "Estrutura ELSE", code: "if nota >= 7:\n    print('Ok')\n___:\n    print('Reprovado')", ans: ["else"], hint: "Ramo executado quando a condição falha.", exp: "`else` trata os casos em que o IF resulta em Falso." },
+                { topic: "Estrutura ELIF", code: "if nota >= 9:\n    print('A')\n___ nota >= 7:\n    print('B')", ans: ["elif"], hint: "Condição intermediária encadeada.", exp: "`elif` testa novas condições em sequência." },
+                { topic: "Operador Lógico AND", code: "if idade >= 18 ___ cnh:\n    print('Pode dirigir')", ans: ["and"], hint: "Ambas as condições precisam ser Verdadeiras.", exp: "`and` exige que todas as condições sejam True." },
+                { topic: "Operador Lógico OR", code: "if eh_estudante ___ eh_idoso:\n    print('Desconto')", ans: ["or"], hint: "Ao menos uma condição precisa ser Verdadeira.", exp: "`or` aceita qualquer condição Verdadeira." },
+                { topic: "Laço FOR", code: "___ i in range(5):\n    print(i)", ans: ["for"], hint: "Laço de repetição por iteração.", exp: "`for` percorre elementos de uma sequência." },
+                { topic: "Gerador RANGE", code: "for i in ___(1, 10):\n    print(i)", ans: ["range"], hint: "Gera uma sequência de números.", exp: "`range(inicio, fim)` cria intervalos numéricos." },
+                { topic: "Laço WHILE", code: "___ contador < 5:\n    contador += 1", ans: ["while"], hint: "Repete enquanto a condição for True.", exp: "`while` repete enquanto a condição for mantida." },
+                { topic: "Comando BREAK", code: "while True:\n    if pronto:\n        ___", ans: ["break"], hint: "Interrompe imediatamente a repetição.", exp: "`break` encerra o laço na hora." },
+                { topic: "Comando CONTINUE", code: "for i in range(10):\n    if i % 2 == 0:\n        ___", ans: ["continue"], hint: "Pula para a próxima iteração.", exp: "`continue` pula o código restante e avança a iteração." },
+                { topic: "Adicionar em Lista", code: "itens = ['a']\nitens.___('b')", ans: ["append"], hint: "Adiciona elemento ao final da lista.", exp: "`.append()` insere no fim da lista." },
+                { topic: "Remover de Lista", code: "itens = ['a', 'b']\nitens.___('a')", ans: ["remove"], hint: "Remove o elemento especificado.", exp: "`.remove()` exclui o item correspondente." },
+                { topic: "Ordenar Lista", code: "nums = [3, 1, 2]\nnums.___()", ans: ["sort"], hint: "Ordena os itens da lista.", exp: "`.sort()` ordena a lista em ordem crescente." },
+                { topic: "Chaves de Dicionário", code: "d = {'a': 1}\nchaves = d.___()", ans: ["keys"], hint: "Retorna as chaves mapeadas.", exp: "`.keys()` obtém as chaves do dicionário." },
+                { topic: "Valores de Dicionário", code: "d = {'a': 1}\nvalores = d.___()", ans: ["values"], hint: "Retorna os valores armazenados.", exp: "`.values()` extrai os valores do dicionário." },
+                { topic: "Declaração DEF", code: "___ soma(a, b):\n    return a + b", ans: ["def"], hint: "Declaração para criar funções.", exp: "`def` cria um bloco de função reutilizável." },
+                { topic: "Instrução RETURN", code: "def soma(a, b):\n    ___ a + b", ans: ["return"], hint: "Devolve a saída da função.", exp: "`return` envia o resultado de volta para o chamador." },
+                { topic: "Função LAMBDA", code: "dobro = ___ x: x * 2", ans: ["lambda"], hint: "Declaração de função anônima inline.", exp: "`lambda` cria uma função simplificada de linha única." },
+                { topic: "Bloco TRY", code: "___:\n    num = int('abc')\nexcept ValueError:\n    print('Erro')", ans: ["try"], hint: "Inicia bloco para tratamento de erros.", exp: "`try` isola trechos sujeitos a falhas." },
+                { topic: "Bloco EXCEPT", code: "try:\n    res = 10 / 0\n___ ZeroDivisionError:\n    print('Erro')", ans: ["except"], hint: "Captura o erro gerado no try.", exp: "`except` trata o erro específico." }
             ];
 
-            // GERADOR DOS 300 EXERCÍCIOS TOTALMENTE DIVERSIFICADOS E SEM REPETIÇÕES
-            ['python', 'sql', 'html'].forEach(lang => {
+            // BASE DE TEMPLATES PARA SQL (300 ATIVIDADES - SQL MODERNO E COMPLETO)
+            const sqlTemplates = [
+                { topic: "Seleção de Registros", code: "___ nome, email FROM clientes;", ans: ["SELECT", "select"], hint: "Comando principal de consulta DQL.", exp: "`SELECT` lista as colunas desejadas na consulta." },
+                { topic: "Filtro WHERE", code: "SELECT * FROM produtos\n___ preco > 100;", ans: ["WHERE", "where"], hint: "Filtra registros por condição.", exp: "`WHERE` aplica restrições às linhas da tabela." },
+                { topic: "Inserção INSERT INTO", code: "___ usuarios (nome, idade)\nVALUES ('Ana', 28);", ans: ["INSERT INTO", "insert into"], hint: "Inserção de novas linhas.", exp: "`INSERT INTO` registra novos dados na tabela." },
+                { topic: "Atualização UPDATE", code: "___ funcionarios\nSET salario = 5000\nWHERE id = 1;", ans: ["UPDATE", "update"], hint: "Modifica dados existentes.", exp: "`UPDATE` atualiza os registros indicados." },
+                { topic: "Exclusão DELETE FROM", code: "___ FROM logs\nWHERE data < '2023-01-01';", ans: ["DELETE", "delete"], hint: "Apaga registros de uma tabela.", exp: "`DELETE FROM` remove linhas conforme a condição." },
+                { topic: "Criação DDL CREATE TABLE", code: "___ vendas (\n    id INT PRIMARY KEY,\n    valor DECIMAL(10,2)\n);", ans: ["CREATE TABLE", "create table"], hint: "Criação de nova tabela.", exp: "`CREATE TABLE` define a estrutura da tabela." },
+                { topic: "Alteração ALTER TABLE", code: "___ clientes\nADD COLUMN telefone VARCHAR(20);", ans: ["ALTER TABLE", "alter table"], hint: "Altera estrutura de tabela existente.", exp: "`ALTER TABLE` modifica colunas e constraints." },
+                { topic: "Exclusão DDL DROP TABLE", code: "___ tabela_temp;", ans: ["DROP TABLE", "drop table"], hint: "Exclui tabela e dados permanentemente.", exp: "`DROP TABLE` apaga completamente a tabela do banco." },
+                { topic: "Intervalo BETWEEN", code: "SELECT * FROM vendas\nWHERE valor ___ 100 AND 500;", ans: ["BETWEEN", "between"], hint: "Filtra dentro de um intervalo inclusivo.", exp: "`BETWEEN` verifica o alcance de um valor entre limites." },
+                { topic: "Conjunto IN", code: "SELECT * FROM clientes\nWHERE estado ___ ('SP', 'RJ', 'MG');", ans: ["IN", "in"], hint: "Filtra combinando com uma lista de valores.", exp: "`IN` reduz múltiplos ORs em uma lista simples." },
+                { topic: "Busca por Padrão LIKE", code: "SELECT * FROM usuarios\nWHERE nome ___ 'Silva%';", ans: ["LIKE", "like"], hint: "Busca de padrões de texto.", exp: "`LIKE` com `%` permite buscar fragmentos de texto." },
+                { topic: "Ordenação ORDER BY", code: "SELECT * FROM produtos\n___ preco DESC;", ans: ["ORDER BY", "order by"], hint: "Ordena os resultados.", exp: "`ORDER BY` ajusta a ordem crescente ou decrescente." },
+                { topic: "Limitação LIMIT", code: "SELECT * FROM ranking\nORDER BY pontos DESC\n___ 10;", ans: ["LIMIT", "limit"], hint: "Limita o total de linhas retornadas.", exp: "`LIMIT` restringe a quantidade de resultados." },
+                { topic: "Sem Duplicatas DISTINCT", code: "SELECT ___ cidade FROM clientes;", ans: ["DISTINCT", "distinct"], hint: "Remove duplicatas nos resultados.", exp: "`DISTINCT` retorna apenas valores únicos." },
+                { topic: "Contagem COUNT", code: "SELECT ___(id) FROM usuarios;", ans: ["COUNT", "count"], hint: "Função agregada para contagem.", exp: "`COUNT()` contabiliza o número de linhas." },
+                { topic: "Soma SUM", code: "SELECT ___(valor) FROM vendas;", ans: ["SUM", "sum"], hint: "Soma os valores numéricos.", exp: "`SUM()` calcula o total acumulado." },
+                { topic: "Média AVG", code: "SELECT ___(salario) FROM funcionarios;", ans: ["AVG", "avg"], hint: "Calcula a média aritmética.", exp: "`AVG()` calcula a média dos valores." },
+                { topic: "Valor Mínimo MIN", code: "SELECT ___(preco) FROM produtos;", ans: ["MIN", "min"], hint: "Retorna o menor valor registrado.", exp: "`MIN()` descobre o menor valor." },
+                { topic: "Valor Máximo MAX", code: "SELECT ___(idade) FROM clientes;", ans: ["MAX", "max"], hint: "Retorna o maior valor registrado.", exp: "`MAX()` descobre o maior valor." },
+                { topic: "Agrupamento GROUP BY", code: "SELECT categoria, COUNT(*)\nFROM produtos\n___ categoria;", ans: ["GROUP BY", "group by"], hint: "Agrupa linhas idênticas.", exp: "`GROUP BY` agrupa dados para efetuar agregações." },
+                { topic: "Filtro Agregado HAVING", code: "SELECT depto, AVG(salario)\nFROM funcionarios\nGROUP BY depto\n___ AVG(salario) > 5000;", ans: ["HAVING", "having"], hint: "Filtro aplicado sobre grupos do GROUP BY.", exp: "`HAVING` filtra os grupos já somados ou calculados." },
+                { topic: "Junção INNER JOIN", code: "SELECT p.id, c.nome\nFROM pedidos p\n___ clientes c ON p.cliente_id = c.id;", ans: ["INNER JOIN", "inner join"], hint: "Retorna correspondências exatas em ambas tabelas.", exp: "`INNER JOIN` cruza dados com correspondência exata." },
+                { topic: "Junção LEFT JOIN", code: "SELECT c.nome, p.id\nFROM clientes c\n___ pedidos p ON c.id = p.cliente_id;", ans: ["LEFT JOIN", "left join"], hint: "Mantém todos os registros da tabela da esquerda.", exp: "`LEFT JOIN` preserva todas as linhas da primeira tabela." },
+                { topic: "Concatenação CONCAT", code: "SELECT ___(nome, ' ', sobrenome)\nFROM usuarios;", ans: ["CONCAT", "concat"], hint: "Junta múltiplos textos em um só.", exp: "`CONCAT()` une cadeias de caracteres." },
+                { topic: "Tratamento de Nulos COALESCE", code: "SELECT ___(telefone, 'Sem contato') FROM clientes;", ans: ["COALESCE", "coalesce"], hint: "Substitui valores NULL por uma alternativa.", exp: "`COALESCE()` retorna o primeiro argumento não nulo." },
+                { topic: "Estrutura CASE WHEN", code: "SELECT nome,\n  ___ WHEN nota >= 7 THEN 'Aprovado'\n  ELSE 'Reprovado' END\nFROM alunos;", ans: ["CASE", "case"], hint: "Lógica condicional dentro do SELECT.", exp: "`CASE` inicia blocos de tomada de decisão no SQL." },
+                { topic: "Função de Janela ROW_NUMBER", code: "SELECT nome, salario,\n  ___() OVER (ORDER BY salario DESC) AS pos\nFROM funcionarios;", ans: ["ROW_NUMBER", "row_number"], hint: "Enumera linhas em uma partição.", exp: "`ROW_NUMBER()` gera um índice numérico sequencial por linha." },
+                { topic: "Particionamento PARTITION BY", code: "SELECT depto, salario,\n  AVG(salario) OVER (___ BY depto) AS media_depto\nFROM funcionarios;", ans: ["PARTITION BY", "partition by"], hint: "Divide o conjunto em janelas calculadas.", exp: "`PARTITION BY` agrupa sem colapsar as linhas." },
+                { topic: "Estrutura CTE WITH", code: "___ relatorio AS (\n  SELECT * FROM vendas WHERE mes = 3\n)\nSELECT * FROM relatorio;", ans: ["WITH", "with"], hint: "Cria uma tabela temporária nomeada (CTE).", exp: "`WITH` constrói subconsultas limpas e modulares." },
+                { topic: "Criação de Visão CREATE VIEW", code: "___ v_resumo AS\nSELECT cliente_id, SUM(valor) AS total\nFROM vendas GROUP BY cliente_id;", ans: ["CREATE VIEW", "create view"], hint: "Salva uma consulta como tabela virtual.", exp: "`CREATE VIEW` cria visões reutilizáveis de dados." }
+            ];
+
+            // GERADOR DE NÍVEIS (300 PARA PYTHON E 300 PARA SQL)
+            ['python', 'sql'].forEach(function(lang) {
                 for (let i = 1; i <= 300; i++) {
                     let cat = "";
                     let topic = "";
@@ -378,124 +356,88 @@
                     let ans = [];
                     let hintStr = "";
                     let exp = "";
-                    let fileExt = lang === 'python' ? 'py' : lang === 'sql' ? 'sql' : 'html';
+                    let fileExt = lang === 'python' ? 'py' : 'sql';
 
                     if (lang === 'python') {
-                        // Seleção do módulo categórico segundo o livro
-                        if (i <= 50) cat = "Módulo 1: Sintaxe, Tipos, Variáveis e Operadores";
-                        else if (i <= 100) cat = "Módulo 2: Estruturas Condicionais e Lógica";
-                        else if (i <= 150) cat = "Módulo 3: Laços de Repetição e Fluxo";
-                        else if (i <= 200) cat = "Módulo 4: Coleções (Listas, Tuplas, Dicionários, Sets)";
-                        else if (i <= 250) cat = "Módulo 5: Funções e Programação Funcional";
-                        else cat = "Módulo 6: Módulos, Arquivos, Exceções e Data Science";
+                        if (i <= 50) cat = "Variáveis, Entrada/Saída e Operadores";
+                        else if (i <= 100) cat = "Estruturas Condicionais (if/elif/else)";
+                        else if (i <= 150) cat = "Laços de Repetição (for/while)";
+                        else if (i <= 200) cat = "Listas, Tuplas e Dicionários";
+                        else if (i <= 250) cat = "Funções, Escopo e Módulos";
+                        else cat = "Tratamento de Exceções e Arquivos";
 
-                        // Mapeia o item garantindo rotação completa da base de templates sem repetição idêntica
-                        const tplIndex = (i - 1) % pyTemplates.length;
-                        const baseTpl = pyTemplates[tplIndex];
-
-                        topic = `${baseTpl.topic} (Exercício #${i})`;
-                        
-                        // Modifica dinamicamente variáveis/contexto para garantir código único a cada ID
-                        const varName = `var_${i}`;
-                        const numVal = i * 3 + 7;
-                        
-                        codeTpl = `# Exercício ${i}: ${baseTpl.topic}\n# Categoria: ${cat}\n` + 
-                                  baseTpl.code.replace(/v|x|lista|dic|dados|txt|n/g, (match) => {
-                                      if (match === 'v' || match === 'x') return `d_${i}`;
-                                      if (match === 'lista') return `lista_${i}`;
-                                      if (match === 'dic') return `dados_${i}`;
-                                      return match;
-                                  });
-
+                        const baseTpl = pyTemplates[(i - 1) % pyTemplates.length];
+                        topic = baseTpl.topic + " (Exercício #" + i + ")";
+                        codeTpl = "# Exercício Python #" + i + "\n# Categoria: " + cat + "\n" + baseTpl.code;
                         ans = baseTpl.ans;
                         hintStr = baseTpl.hint;
                         exp = baseTpl.exp;
 
                     } else if (lang === 'sql') {
-                        cat = i <= 100 ? "SQL Básico e Consultas" : i <= 200 ? "SQL Analytics e Agrupamentos" : "SQL Avançado e CTEs";
-                        if (i === 1) {
-                            topic = "Consulta SELECT básica";
-                            codeTpl = "___ * FROM clientes;";
-                            ans = ["SELECT", "select"];
-                            hintStr = "Comando principal de consulta em banco de dados.";
-                            exp = "`SELECT *` retorna todas as colunas da tabela.";
-                        } else if (i <= 100) {
-                            topic = `Agrupamento GROUP BY (Nível ${i})`;
-                            codeTpl = `-- Exercício SQL #${i}\nSELECT depto, COUNT(*)\nFROM funcionarios\n___ BY depto;`;
-                            ans = ["GROUP", "group"];
-                            hintStr = "Sintaxe para agrupar registros.";
-                            exp = "`GROUP BY` agrupa linhas baseado nos valores de colunas.";
-                        } else if (i <= 200) {
-                            topic = `Window Functions (Nível ${i})`;
-                            codeTpl = `-- Exercício SQL #${i}\nSELECT nome, ROW_NUMBER() OVER (___ BY salario DESC)\nFROM funcionarios;`;
-                            ans = ["ORDER", "order"];
-                            hintStr = "Ordena o particionamento analítico.";
-                            exp = "A cláusula `ORDER BY` dentro de OVER define a ordenação dos cálculos de janela.";
-                        } else {
-                            topic = `CTEs e Subconsultas (Nível ${i})`;
-                            codeTpl = `-- Exercício SQL #${i}\nWITH relatorio_${i} AS (\n    SELECT * FROM vendas WHERE total > ${i * 10}\n)\nSELECT * ___ relatorio_${i};`;
-                            ans = ["FROM", "from"];
-                            hintStr = "Especifica a origem da consulta na CTE.";
-                            exp = "CTEs criam visões temporárias tratadas como tabelas na cláusula FROM.";
-                        }
-                    } else {
-                        cat = i <= 100 ? "HTML5 Estrutural" : i <= 200 ? "Formulários e Componentes" : "Dashboards e HTML Semântico";
-                        if (i === 1) {
-                            topic = "Título H1";
-                            codeTpl = "<___>Painel de Controle</h1 >";
-                            ans = ["h1"];
-                            hintStr = "Tag HTML de título de nível 1.";
-                            exp = "`<h1>` define o elemento de título principal do documento.";
-                        } else if (i <= 100) {
-                            topic = `Estrutura de Componente (Nível ${i})`;
-                            codeTpl = `<!-- Componente HTML #${i} -->\n<div id="card_${i}">\n  <___ class="titulo">Métrica ${i}</h3>\n</div>`;
-                            ans = ["h3", "h2", "span"];
-                            hintStr = "Tag de título de cabeçalho.";
-                            exp = "Tags de cabeçalho organizam hierarquicamente as seções do documento.";
-                        } else {
-                            topic = `Canvas e Gráficos (Nível ${i})`;
-                            codeTpl = `<!-- Dashboard Front-End #${i} -->\n<___ id="chart_${i}"></canvas>`;
-                            ans = ["canvas"];
-                            hintStr = "Elemento HTML5 para desenho e gráficos via JavaScript.";
-                            exp = "A tag `<canvas>` permite renderizar gráficos interativos e animações dinâmicas.";
-                        }
+                        if (i <= 50) cat = "Módulo 1: Fundamentos & DDL/DML Básicos";
+                        else if (i <= 100) cat = "Módulo 2: Agregações & Agrupamentos";
+                        else if (i <= 150) cat = "Módulo 3: Relacionamentos & JOINS";
+                        else if (i <= 200) cat = "Módulo 4: Manipulação de Strings & CASE";
+                        else if (i <= 250) cat = "Módulo 5: Window Functions & CTEs";
+                        else cat = "Módulo 6: Views, Índices & Transações";
+
+                        const baseTpl = sqlTemplates[(i - 1) % sqlTemplates.length];
+                        topic = baseTpl.topic + " (Atividade #" + i + ")";
+                        const numRef = i * 15 + 10;
+                        codeTpl = "-- Atividade SQL #" + i + "\n-- Categoria: " + cat + "\n" + 
+                                  baseTpl.code.replace(/vendas|clientes|produtos|usuarios/g, "tb_" + i)
+                                             .replace(/100|500|5000|10/g, "" + numRef);
+                        ans = baseTpl.ans;
+                        hintStr = baseTpl.hint;
+                        exp = baseTpl.exp;
                     }
 
                     db[lang].push({
                         id: i,
                         tech: techNames[lang],
                         category: cat,
-                        title: `${topic}`,
-                        desc: `Resolva o exercício #${i} de ${techNames[lang]} preenchendo a lacuna '___'.`,
+                        title: topic,
+                        desc: "Complete o exercício #" + i + " da trilha " + techNames[lang] + " preenchendo a lacuna '___'.",
                         code: codeTpl,
                         answers: ans,
-                        hint: hintStr || `Preencha a instrução adequada para resolver o exercício.`,
+                        hint: hintStr,
                         explanation: exp,
-                        filename: `exercicio_${i}.${fileExt}`
+                        filename: "exercicio_" + i + "." + fileExt
                     });
                 }
             });
 
-            // ESTADO INICIAL DA APLICAÇÃO
+            // ESTADO INICIAL
             let state = {
                 lang: 'python',
                 currentLevelIndex: 0,
                 completed: {
                     python: new Set(),
-                    sql: new Set(),
-                    html: new Set()
+                    sql: new Set()
                 },
                 score: 0,
                 streak: 0,
-                activeFilter: 'all'
+                filter: 'all'
             };
 
-            // CARREGAR PROGRESSO SALVO NO NAVEGADOR
+            function saveStorage() {
+                localStorage.setItem('code_quest_py_sql', JSON.stringify({
+                    lang: state.lang,
+                    currentLevelIndex: state.currentLevelIndex,
+                    score: state.score,
+                    streak: state.streak,
+                    completed: {
+                        python: Array.from(state.completed.python),
+                        sql: Array.from(state.completed.sql)
+                    }
+                }));
+            }
+
             function loadStorage() {
-                try {
-                    const saved = localStorage.getItem('code_quest_feltrin_v1');
-                    if (saved) {
-                        const parsed = JSON.parse(saved);
+                const data = localStorage.getItem('code_quest_py_sql');
+                if (data) {
+                    try {
+                        const parsed = JSON.parse(data);
                         state.lang = parsed.lang || 'python';
                         state.currentLevelIndex = parsed.currentLevelIndex || 0;
                         state.score = parsed.score || 0;
@@ -503,33 +445,14 @@
                         if (parsed.completed) {
                             state.completed.python = new Set(parsed.completed.python || []);
                             state.completed.sql = new Set(parsed.completed.sql || []);
-                            state.completed.html = new Set(parsed.completed.html || []);
                         }
+                    } catch (e) {
+                        console.error("Erro ao carregar dados salvos:", e);
                     }
-                } catch(e) {
-                    console.error("Erro ao carregar do localStorage", e);
                 }
             }
 
-            function saveStorage() {
-                try {
-                    localStorage.setItem('code_quest_feltrin_v1', JSON.stringify({
-                        lang: state.lang,
-                        currentLevelIndex: state.currentLevelIndex,
-                        score: state.score,
-                        streak: state.streak,
-                        completed: {
-                            python: Array.from(state.completed.python),
-                            sql: Array.from(state.completed.sql),
-                            html: Array.from(state.completed.html)
-                        }
-                    }));
-                } catch(e) {
-                    console.error("Erro ao salvar no localStorage", e);
-                }
-            }
-
-            // REFERÊNCIAS AO DOM
+            // REFERÊNCIAS DOM
             const currentLevelNum = document.getElementById('currentLevelNum');
             const techBadge = document.getElementById('techBadge');
             const difficultyBadge = document.getElementById('difficultyBadge');
@@ -561,24 +484,20 @@
             const levelsGrid = document.getElementById('levelsGrid');
             const resetProgressBtn = document.getElementById('resetProgressBtn');
 
-            // DESENHAR O NÍVEL ATUAL NA TELA
             function renderLevel() {
                 const currentList = db[state.lang];
-                if (!currentList || !currentList[state.currentLevelIndex]) return;
-
                 const lvl = currentList[state.currentLevelIndex];
 
                 currentLevelNum.innerText = lvl.id;
                 
-                let iconClass = state.lang === 'python' ? 'fa-brands fa-python' : state.lang === 'sql' ? 'fa-solid fa-database' : 'fa-brands fa-html5';
-                techBadge.innerHTML = `<i class="${iconClass}"></i> ${lvl.tech}`;
+                let iconClass = state.lang === 'python' ? 'fa-brands fa-python' : 'fa-solid fa-database';
+                techBadge.innerHTML = '<i class="' + iconClass + '"></i> ' + lvl.tech;
                 
                 difficultyBadge.innerText = lvl.category;
-                questionTitle.innerText = `${lvl.title}`;
+                questionTitle.innerText = lvl.id + '. ' + lvl.title;
                 questionDesc.innerText = lvl.desc;
                 filenameText.innerText = lvl.filename;
 
-                // Destaca a lacuna na área de código
                 const formattedCode = lvl.code.replace('___', '<span class="bg-blue-600/30 text-blue-300 border-b-2 border-blue-400 px-2 py-0.5 rounded font-bold animate-pulse">___</span>');
                 codeSnippet.innerHTML = formattedCode;
 
@@ -596,7 +515,7 @@
             }
 
             function updateTabUI() {
-                document.querySelectorAll('.lang-tab').forEach(tab => {
+                document.querySelectorAll('.lang-tab').forEach(function(tab) {
                     if (tab.dataset.lang === state.lang) {
                         tab.className = "lang-tab flex-1 py-2 px-4 rounded-lg text-xs md:text-sm font-semibold transition flex items-center justify-center gap-2 bg-blue-600 text-white shadow";
                     } else {
@@ -613,11 +532,48 @@
                 completedCount.innerText = doneSet.size;
                 
                 const pct = (doneSet.size / 300) * 100;
-                progressBar.style.width = `${pct}%`;
+                progressBar.style.width = pct + '%';
             }
 
-            // AVALIAR RESPOSTA ENVIADA
-            answerForm.addEventListener('submit', (e) => {
+            function renderSidebarGrid() {
+                levelsGrid.innerHTML = '';
+                const completedSet = state.completed[state.lang];
+
+                let start = 1, end = 300;
+                if (state.filter === 'mod1') { start = 1; end = 50; }
+                else if (state.filter === 'mod2') { start = 51; end = 100; }
+                else if (state.filter === 'mod3') { start = 101; end = 200; }
+                else if (state.filter === 'mod4') { start = 201; end = 300; }
+
+                for (let i = start; i <= end; i++) {
+                    const btn = document.createElement('button');
+                    const isDone = completedSet.has(i);
+                    const isCurrent = (i - 1) === state.currentLevelIndex;
+
+                    let classes = "h-9 rounded-lg font-bold text-xs flex items-center justify-center transition border ";
+                    if (isCurrent) {
+                        classes += "bg-blue-600 text-white border-blue-400 ring-2 ring-blue-500/50";
+                    } else if (isDone) {
+                        classes += "bg-emerald-950/60 text-emerald-400 border-emerald-600/50 hover:bg-emerald-900/50";
+                    } else {
+                        classes += "bg-slate-800 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-slate-200";
+                    }
+
+                    btn.className = classes;
+                    btn.innerText = i;
+                    btn.addEventListener('click', function() {
+                        state.currentLevelIndex = i - 1;
+                        saveStorage();
+                        renderLevel();
+                        levelsSidebar.classList.add('translate-x-full');
+                    });
+
+                    levelsGrid.appendChild(btn);
+                }
+            }
+
+            // EVENTOS
+            answerForm.addEventListener('submit', function(e) {
                 e.preventDefault();
                 const inputVal = answerInput.value.trim();
                 const currentList = db[state.lang];
@@ -625,10 +581,11 @@
 
                 if (!inputVal) return;
 
-                // Verifica correspondência no array de respostas permitidas
-                const isCorrect = lvl.answers.some(ans => ans.toLowerCase() === inputVal.toLowerCase());
+                const isCorrect = lvl.answers.some(function(ans) {
+                    return ans.toLowerCase() === inputVal.toLowerCase();
+                });
 
-                feedbackContainer.classList.remove('hidden', 'bg-emerald-950/40', 'border-emerald-500/40', 'bg-rose-950/40', 'border-rose-500/40', 'glow-success', 'glow-error');
+                feedbackContainer.classList.remove('hidden', 'bg-emerald-950/40', 'border-emerald-500/40', 'bg-rose-950/40', 'border-rose-500/40');
 
                 if (isCorrect) {
                     if (!state.completed[state.lang].has(lvl.id)) {
@@ -640,10 +597,10 @@
                     updateStatsDisplay();
 
                     feedbackContainer.classList.add('bg-emerald-950/40', 'border-emerald-500/40', 'glow-success');
-                    feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+                    feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
                     feedbackTitle.innerText = "Excelente! Código Correto!";
                     feedbackTitle.className = "font-bold text-lg mb-1 text-emerald-400";
-                    feedbackText.innerText = `Você preencheu perfeitamente a lacuna com '${inputVal}'.`;
+                    feedbackText.innerText = "Você respondeu corretamente com '" + inputVal + "'.";
                     explanationText.innerHTML = lvl.explanation;
                 } else {
                     state.streak = 0;
@@ -651,17 +608,16 @@
                     updateStatsDisplay();
 
                     feedbackContainer.classList.add('bg-rose-950/40', 'border-rose-500/40', 'glow-error');
-                    feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i>`;
+                    feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-400"></i>';
                     feedbackTitle.innerText = "Sintaxe Incorreta";
                     feedbackTitle.className = "font-bold text-lg mb-1 text-rose-400";
-                    feedbackText.innerText = `A resposta '${inputVal}' não corresponde ao esperado para esta lacuna. Tente novamente!`;
-                    explanationText.innerHTML = `Analise o contexto de ${lvl.category} e revise a instrução digitada. Utilize o botão 'Pedir Dica' se necessário.`;
+                    feedbackText.innerText = "O valor '" + inputVal + "' não resolve a lacuna. Tente novamente!";
+                    explanationText.innerHTML = "Analise o contexto do código e tente novamente.";
                 }
             });
 
-            // TROCA DE TRILHA (PYTHON / SQL / HTML)
-            document.querySelectorAll('.lang-tab').forEach(tab => {
-                tab.addEventListener('click', (e) => {
+            document.querySelectorAll('.lang-tab').forEach(function(tab) {
+                tab.addEventListener('click', function(e) {
                     const targetLang = e.currentTarget.dataset.lang;
                     if (targetLang !== state.lang) {
                         state.lang = targetLang;
@@ -672,20 +628,18 @@
                 });
             });
 
-            // AÇÕES DE DICA E REVELAR RESPOSTA
-            hintBtn.addEventListener('click', () => {
+            hintBtn.addEventListener('click', function() {
                 const lvl = db[state.lang][state.currentLevelIndex];
                 hintText.innerText = lvl.hint;
                 hintBox.classList.toggle('hidden');
             });
 
-            revealBtn.addEventListener('click', () => {
+            revealBtn.addEventListener('click', function() {
                 const lvl = db[state.lang][state.currentLevelIndex];
                 answerInput.value = lvl.answers[0];
             });
 
-            // NAVEGAÇÃO ENTRE NÍVEIS
-            nextLevelFeedbackBtn.addEventListener('click', () => {
+            nextLevelFeedbackBtn.addEventListener('click', function() {
                 if (state.currentLevelIndex < 299) {
                     state.currentLevelIndex++;
                     saveStorage();
@@ -693,7 +647,7 @@
                 }
             });
 
-            nextBtn.addEventListener('click', () => {
+            nextBtn.addEventListener('click', function() {
                 if (state.currentLevelIndex < 299) {
                     state.currentLevelIndex++;
                     saveStorage();
@@ -701,7 +655,7 @@
                 }
             });
 
-            prevBtn.addEventListener('click', () => {
+            prevBtn.addEventListener('click', function() {
                 if (state.currentLevelIndex > 0) {
                     state.currentLevelIndex--;
                     saveStorage();
@@ -709,67 +663,20 @@
                 }
             });
 
-            // MENU LATERAL / DRAWER DE SELEÇÃO DE NÍVEIS
-            toggleSidebarBtn.addEventListener('click', () => {
+            toggleSidebarBtn.addEventListener('click', function() {
                 levelsSidebar.classList.remove('translate-x-full');
             });
 
-            closeSidebarBtn.addEventListener('click', () => {
+            closeSidebarBtn.addEventListener('click', function() {
                 levelsSidebar.classList.add('translate-x-full');
             });
 
-            // FILTROS DO MENU LATERAL
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
-                    document.querySelectorAll('.filter-btn').forEach(b => {
+            document.querySelectorAll('.filter-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    document.querySelectorAll('.filter-btn').forEach(function(b) {
                         b.className = "filter-btn px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700";
                     });
                     e.currentTarget.className = "filter-btn active px-2 py-1 rounded bg-blue-600 text-white font-medium";
-                    state.activeFilter = e.currentTarget.dataset.filter;
+                    state.filter = e.currentTarget.dataset.filter;
                     renderSidebarGrid();
                 });
-            });
-
-            function renderSidebarGrid() {
-                levelsGrid.innerHTML = '';
-                const doneSet = state.completed[state.lang];
-
-                for (let i = 0; i < 300; i++) {
-                    const levelNum = i + 1;
-                    
-                    // Lógica de Filtro
-                    if (state.activeFilter === 'mod1' && (levelNum < 1 || levelNum > 50)) continue;
-                    if (state.activeFilter === 'mod2' && (levelNum < 51 || levelNum > 100)) continue;
-                    if (state.activeFilter === 'mod3' && (levelNum < 101 || levelNum > 200)) continue;
-                    if (state.activeFilter === 'mod4' && (levelNum < 201 || levelNum > 300)) continue;
-
-                    const btn = document.createElement('button');
-                    btn.innerText = levelNum;
-                    
-                    let bgClass = "bg-slate-800 text-slate-400 hover:bg-slate-700 border-slate-700";
-                    if (doneSet.has(levelNum)) {
-                        bgClass = "bg-emerald-600/30 text-emerald-300 border-emerald-500/50 font-bold";
-                    }
-                    if (i === state.currentLevelIndex) {
-                        bgClass += " ring-2 ring-blue-500 border-blue-400 text-white";
-                    }
-
-                    btn.className = `h-9 text-xs rounded-lg border font-mono transition flex items-center justify-center ${bgClass}`;
-                    btn.addEventListener('click', () => {
-                        state.currentLevelIndex = i;
-                        saveStorage();
-                        renderLevel();
-                        levelsSidebar.classList.add('translate-x-full');
-                    });
-
-                    levelsGrid.appendChild(btn);
-                }
-            }
-
-            // REINICIAR PROGRESSO COMPLETO
-            resetProgressBtn.addEventListener('click', () => {
-                if (confirm("Tem certeza que deseja reiniciar todo o seu progresso no aplicativo?")) {
-                    localStorage.removeItem('code_quest_feltrin_v1');
-                    state.completed = { python: new Set(), sql: new Set(), html: new Set() };
-                    state.score = 0;
-                    state.streak = 0;
