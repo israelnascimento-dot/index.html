@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Science Code Quest - 100 Níveis</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        ide: {
+                            bg: '#0f172a',
+                            sidebar: '#1e293b',
+                            card: '#1e293b',
+                            border: '#334155',
+                            accent: '#3b82f6',
+                            success: '#10b981',
+                            error: '#ef4444',
+                            warning: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['Fira Code', 'Consolas', 'Monaco', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome & Google Fonts -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0b0f19;
+            color: #f1f5f9;
+        }
+        pre, code, input.code-input {
+            font-family: 'Fira Code', monospace;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 3px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        .glow-success {
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.3);
+        }
+        .glow-error {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100 overflow-x-hidden">
+
+    <!-- Navbar -->
+    <header class="border-b border-slate-800 bg-slate-900/90 backdrop-blur sticky top-0 z-50 px-4 py-3">
+        <div class="max-w-7xl mx-auto flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="p-2 bg-blue-600/20 text-blue-400 rounded-lg border border-blue-500/30">
+                    <i class="fa-solid fa-terminal text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
+                        Data Science Code Quest
+                    </h1>
+                    <p class="text-xs text-slate-400">100 Desafios: Do Básico ao Extraordinário</p>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="flex items-center space-x-4 text-sm">
+                <div class="flex items-center space-x-1.5 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
+                    <i class="fa-solid fa-fire text-orange-500"></i>
+                    <span id="streakCount" class="font-semibold text-slate-200">0</span>
+                    <span class="text-xs text-slate-400 hidden sm:inline">Streak</span>
+                </div>
+                <div class="flex items-center space-x-1.5 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
+                    <i class="fa-solid fa-star text-yellow-400"></i>
+                    <span id="scoreCount" class="font-semibold text-slate-200">0</span>
+                    <span class="text-xs text-slate-400 hidden sm:inline">XP</span>
+                </div>
+                <div class="flex items-center space-x-1.5 bg-slate-800/80 px-3 py-1.5 rounded-full border border-slate-700">
+                    <i class="fa-solid fa-check-circle text-emerald-400"></i>
+                    <span id="completedCount" class="font-semibold text-slate-200">0</span>/100
+                </div>
+                <button id="toggleSidebarBtn" class="p-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-slate-300 transition">
+                    <i class="fa-solid fa-list-check"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Global Progress Bar -->
+        <div class="w-full bg-slate-800 h-1.5 mt-3 rounded-full overflow-hidden">
+            <div id="progressBar" class="bg-gradient-to-r from-blue-500 to-emerald-400 h-full w-0 transition-all duration-500"></div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <div class="flex-1 flex max-w-7xl w-full mx-auto relative overflow-hidden">
+
+        <!-- Main Challenge View -->
+        <main class="flex-1 p-4 md:p-6 flex flex-col max-w-4xl mx-auto w-full">
+            
+            <!-- Level & Tech Badge Row -->
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+                <div class="flex items-center space-x-2">
+                    <span id="levelBadge" class="px-3 py-1 bg-blue-500/20 text-blue-400 border border-blue-500/30 rounded-md font-semibold text-sm">
+                        Nível <span id="currentLevelNum">1</span>/100
+                    </span>
+                    <span id="techBadge" class="px-3 py-1 bg-purple-500/20 text-purple-300 border border-purple-500/30 rounded-md font-medium text-xs flex items-center gap-1.5">
+                        <i class="fa-brands fa-python"></i> Python
+                    </span>
+                    <span id="difficultyBadge" class="px-3 py-1 bg-slate-800 text-slate-300 border border-slate-700 rounded-md text-xs font-medium">
+                        Básico
+                    </span>
+                </div>
+
+                <!-- Navigation Quick Buttons -->
+                <div class="flex items-center space-x-2">
+                    <button id="prevBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed">
+                        <i class="fa-solid fa-chevron-left mr-1"></i> Anterior
+                    </button>
+                    <button id="nextBtn" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed">
+                        Próximo <i class="fa-solid fa-chevron-right ml-1"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Question Box -->
+            <div class="bg-slate-900 border border-slate-800 rounded-xl p-5 mb-5 shadow-xl">
+                <h2 id="questionTitle" class="text-lg md:text-xl font-bold text-slate-100 mb-2">
+                    Carregando nível...
+                </h2>
+                <p id="questionDesc" class="text-slate-300 text-sm leading-relaxed mb-4">
+                    Descrição da questão...
+                </p>
+
+                <!-- Code Terminal Box -->
+                <div class="bg-slate-950 border border-slate-800 rounded-lg overflow-hidden shadow-inner font-mono text-sm">
+                    <!-- Terminal Top Bar -->
+                    <div class="bg-slate-900/80 px-4 py-2 border-b border-slate-800 flex items-center justify-between text-xs text-slate-400">
+                        <div class="flex items-center space-x-2">
+                            <span class="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-yellow-500/80 inline-block"></span>
+                            <span class="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
+                            <span class="ml-2 font-medium text-slate-400" id="filenameText">script.py</span>
+                        </div>
+                        <span class="text-[10px] text-slate-500 uppercase tracking-wider">Substitua a lacuna ___</span>
+                    </div>
+
+                    <!-- Code Snippet Display with Interactive Gap -->
+                    <div class="p-4 overflow-x-auto text-slate-200 leading-relaxed relative">
+                        <pre id="codeSnippet" class="whitespace-pre-wrap break-words"></pre>
+                    </div>
+                </div>
+
+                <!-- Input Form -->
+                <form id="answerForm" class="mt-4 flex flex-col sm:flex-row items-stretch gap-3">
+                    <div class="relative flex-1">
+                        <input 
+                            type="text" 
+                            id="answerInput" 
+                            placeholder="Digite o código que preenche a lacuna '___'" 
+                            class="w-full bg-slate-950 border border-slate-700 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 rounded-lg px-4 py-3 text-sm text-slate-100 placeholder-slate-500 outline-none transition font-mono"
+                            autocomplete="off"
+                            spellcheck="false"
+                        >
+                        <span class="absolute right-3 top-3 text-xs text-slate-500 hidden sm:inline">Pressione Enter ↵</span>
+                    </div>
+                    <button 
+                        type="submit" 
+                        class="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white font-semibold text-sm rounded-lg shadow-lg shadow-blue-600/20 transition flex items-center justify-center space-x-2 shrink-0"
+                    >
+                        <i class="fa-solid fa-play text-xs"></i>
+                        <span>Executar</span>
+                    </button>
+                </form>
+
+                <!-- Actions: Hint & Solution -->
+                <div class="mt-4 flex items-center justify-between pt-3 border-t border-slate-800 text-xs">
+                    <button id="hintBtn" class="text-amber-400 hover:text-amber-300 flex items-center space-x-1.5 transition">
+                        <i class="fa-regular fa-lightbulb"></i>
+                        <span>Pedir Dica</span>
+                    </button>
+                    <button id="revealBtn" class="text-slate-400 hover:text-slate-200 flex items-center space-x-1.5 transition">
+                        <i class="fa-regular fa-eye"></i>
+                        <span>Revelar Solução</span>
+                    </button>
+                </div>
+
+                <!-- Hint Container -->
+                <div id="hintBox" class="hidden mt-3 p-3 bg-amber-500/10 border border-amber-500/20 rounded-lg text-amber-200 text-xs">
+                    <span class="font-bold"><i class="fa-solid fa-lightbulb mr-1"></i> Dica:</span> <span id="hintText">...</span>
+                </div>
+            </div>
+
+            <!-- Feedback Modal / Result Container -->
+            <div id="feedbackContainer" class="hidden rounded-xl border p-5 mb-5 transition-all duration-300">
+                <div class="flex items-start space-x-3">
+                    <div id="feedbackIcon" class="text-2xl mt-0.5"></div>
+                    <div class="flex-1">
+                        <h3 id="feedbackTitle" class="font-bold text-lg mb-1"></h3>
+                        <p id="feedbackText" class="text-sm leading-relaxed mb-3 text-slate-300"></p>
+                        <div id="explanationBox" class="p-3 bg-slate-950/60 rounded-lg border border-slate-800 text-xs text-slate-300 space-y-1">
+                            <span class="font-semibold text-blue-400 uppercase tracking-wider text-[10px] block">Explicação detalhada:</span>
+                            <div id="explanationText"></div>
+                        </div>
+                        <button id="nextLevelFeedbackBtn" class="mt-4 px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold rounded-lg shadow-md transition flex items-center space-x-2">
+                            <span>Avançar para o Próximo Nível</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Levels Drawer / Sidebar -->
+        <aside id="levelsSidebar" class="fixed inset-y-0 right-0 w-80 bg-slate-900 border-l border-slate-800 shadow-2xl transform translate-x-full transition-transform duration-300 ease-in-out z-50 flex flex-col">
+            <div class="p-4 border-b border-slate-800 flex items-center justify-between">
+                <h3 class="font-bold text-slate-200 text-sm flex items-center gap-2">
+                    <i class="fa-solid fa-cubes text-blue-400"></i> Seleção de Níveis (1-100)
+                </h3>
+                <button id="closeSidebarBtn" class="text-slate-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Difficulty Filters -->
+            <div class="p-3 bg-slate-950/50 border-b border-slate-800 flex justify-between gap-1 text-[11px]">
+                <button data-filter="all" class="filter-btn active px-2 py-1 rounded bg-blue-600 text-white font-medium">Todos</button>
+                <button data-filter="basic" class="filter-btn px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">1-25</button>
+                <button data-filter="inter" class="filter-btn px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">26-50</button>
+                <button data-filter="adv" class="filter-btn px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">51-75</button>
+                <button data-filter="extra" class="filter-btn px-2 py-1 rounded bg-slate-800 text-slate-300 hover:bg-slate-700">76-100</button>
+            </div>
+
+            <!-- Levels Grid List -->
+            <div id="levelsGrid" class="flex-1 overflow-y-auto p-4 grid grid-cols-5 gap-2 custom-scrollbar">
+            </div>
+
+            <div class="p-3 border-t border-slate-800 bg-slate-950/80 text-center">
+                <button id="resetProgressBtn" class="text-xs text-rose-400 hover:text-rose-300 transition flex items-center justify-center gap-1.5 w-full py-1.5">
+                    <i class="fa-solid fa-rotate-left"></i> Reiniciar Todo o Progresso
+                </button>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Script com Banco de Dados de 100 Questões e Lógica -->
+    <script>
+        const levels = [
+            // NÍVEIS 1 A 25: BÁSICO
+            { id: 1, tech: "Python", category: "Básico", title: "Tamanho de Coleção", desc: "Complete a função para medir o número de elementos da lista 'vendas'.", code: "vendas = [120, 150, 90, 200, 310]\ntamanho = ___(vendas)\nprint(tamanho)", answers: ["len", "len()"], hint: "Função nativa do Python para comprimento/tamanho.", explanation: "`len()` retorna a quantidade de itens em uma coleção.", filename: "script.py" },
+            { id: 2, tech: "Python", category: "Básico", title: "Soma de Elementos", desc: "Para calcular o total de faturamento, somamos todos os valores da lista.", code: "receitas = [1000.50, 2500.00, 1200.75]\ntotal = ___(receitas)\nprint(total)", answers: ["sum", "sum()"], hint: "Função embutida para somar números de um iterável.", explanation: "`sum()` retorna a soma dos elementos numéricos.", filename: "soma.py" },
+            { id: 3, tech: "Pandas", category: "Básico", title: "Importação do Pandas", desc: "Complete a convenção padrão de importação do Pandas.", code: "import pandas as ___\n\ndf = pd.DataFrame()", answers: ["pd"], hint: "Alias padrão de 2 letras.", explanation: "`pd` é o alias oficial da comunidade para Pandas.", filename: "analysis.py" },
+            { id: 4, tech: "Pandas", category: "Básico", title: "Leitura de CSV", desc: "Carregue um arquivo CSV em um DataFrame.", code: "import pandas as pd\n\ndf = pd.___\n('dados.csv')", answers: ["read_csv", "read_csv()"], hint: "Função iniciada por 'read_'.", explanation: "`pd.read_csv()` carrega arquivos CSV em DataFrames.", filename: "load_data.py" },
+            { id: 5, tech: "Pandas", category: "Básico", title: "Primeiras Linhas", desc: "Exiba as 5 primeiras linhas do DataFrame.", code: "import pandas as pd\ndf = pd.read_csv('clientes.csv')\n\nprint(df.___())", answers: ["head", "head()"], hint: "Método que significa 'cabeça'.", explanation: "`.head()` exibe as primeiras 5 linhas por padrão.", filename: "preview.py" },
+            { id: 6, tech: "SQL", category: "Básico", title: "Consulta Simples SQL", desc: "Selecione todas as colunas da tabela funcionarios.", code: "___ * FROM funcionarios;", answers: ["SELECT", "select"], hint: "Comando principal para consulta.", explanation: "`SELECT *` retorna todas as colunas.", filename: "query.sql" },
+            { id: 7, tech: "SQL", category: "Básico", title: "Filtragem Condicional", desc: "Filtre onde a idade é maior que 18.", code: "SELECT * FROM usuarios\n___ idade > 18;", answers: ["WHERE", "where"], hint: "Cláusula para condições em SQL.", explanation: "`WHERE` aplica filtros nas linhas da tabela.", filename: "filter.sql" },
+            { id: 8, tech: "NumPy", category: "Básico", title: "Importação do NumPy", desc: "Qual é a convenção padrão de importação do NumPy?", code: "import numpy as ___\n\narr = np.array([1, 2, 3])", answers: ["np"], hint: "Alias de 2 letras.", explanation: "`np` é a convenção universal para NumPy.", filename: "numpy_start.py" },
+            { id: 9, tech: "NumPy", category: "Básico", title: "Array Unidimensional", desc: "Crie um array NumPy a partir de uma lista.", code: "import numpy as np\n\ndados = [10, 20, 30]\narray = np.___(dados)", answers: ["array", "array()"], hint: "Função principal para criar vetores.", explanation: "`np.array()` converte sequências em Ndarrays.", filename: "array_creation.py" },
+            { id: 10, tech: "Python", category: "Básico", title: "Filtro de Pares", desc: "Filtre apenas números pares usando List Comprehension.", code: "numeros = [1, 2, 3, 4, 5, 6]\npares = [x for x in numeros if x % 2 ___ 0]", answers: ["=="], hint: "Operador de igualdade.", explanation: "`==` compara se o resto é igual a zero.", filename: "list_comp.py" },
+            { id: 11, tech: "Pandas", category: "Básico", title: "Dimensões do DataFrame", desc: "Verifique a quantidade de linhas e colunas.", code: "import pandas as pd\ndf = pd.read_csv('vendas.csv')\n\nprint(df.___\n)", answers: ["shape"], hint: "Atributo que retorna a tupla (linhas, colunas).", explanation: "`.shape` é um atributo com a dimensão do DataFrame.", filename: "shape.py" },
+            { id: 12, tech: "Pandas", category: "Básico", title: "Resumo Estrutural", desc: "Obtenha informações de tipos e valores nulos.", code: "import pandas as pd\ndf = pd.read_csv('dados.csv')\n\ndf.___()", answers: ["info", "info()"], hint: "Método para resumo de tipos e memória.", explanation: "`.info()` detalha dtypes, contagem não nula e uso de memória.", filename: "info.py" },
+            { id: 13, tech: "SQL", category: "Básico", title: "Ordenação Decrescente", desc: "Ordene os preços do maior para o menor.", code: "SELECT nome, preco FROM produtos\nORDER BY preco ___;", answers: ["DESC", "desc"], hint: "Abreviatura para Descending.", explanation: "`DESC` ordena resultados em ordem decrescente.", filename: "order.sql" },
+            { id: 14, tech: "SQL", category: "Básico", title: "Contagem de Registros", desc: "Conte o total de linhas da tabela de pedidos.", code: "SELECT ___( * ) FROM pedidos;", answers: ["COUNT", "count", "COUNT()", "count()"], hint: "Função agregada de contagem.", explanation: "`COUNT(*)` retorna a quantidade de linhas.", filename: "count.sql" },
+            { id: 15, tech: "Matplotlib", category: "Básico", title: "Submódulo Pyplot", desc: "Importe o submódulo de gráficos do Matplotlib.", code: "import matplotlib.___ as plt\n\nplt.plot([1, 2, 3], [4, 5, 6])", answers: ["pyplot"], hint: "Módulo principal de plotagem.", explanation: "`pyplot` provê comandos de plotagem estilo MATLAB.", filename: "plot_intro.py" },
+            { id: 16, tech: "Matplotlib", category: "Básico", title: "Renderização do Gráfico", desc: "Exiba o gráfico na tela.", code: "import matplotlib.pyplot as plt\nplt.plot([1, 2], [3, 4])\nplt.___()", answers: ["show", "show()"], hint: "Método que exibe a figura.", explanation: "`plt.show()` renderiza e exibe a janela do gráfico.", filename: "render.py" },
+            { id: 17, tech: "Pandas", category: "Básico", title: "Estatísticas Descritivas", desc: "Gere resumo estatístico com média, std, min e max.", code: "import pandas as pd\ndf = pd.read_csv('vendas.csv')\n\nprint(df.___())", answers: ["describe", "describe()"], hint: "Método para resumos estatísticos.", explanation: "`.describe()` sintetiza métricas de colunas numéricas.", filename: "stats.py" },
+            { id: 18, tech: "Python", category: "Básico", title: "Acesso a Dicionário", desc: "Acesse a chave 'idade' no dicionário.", code: "cliente = {'nome': 'Ana', 'idade': 28}\nvalor = cliente['___']", answers: ["idade"], hint: "Chave correspondente ao valor 28.", explanation: "Sintaxe de colchetes acessa chaves em dicionários.", filename: "dict.py" },
+            { id: 19, tech: "SQL", category: "Básico", title: "Valores Únicos", desc: "Retorne países sem repetições.", code: "SELECT ___ pais FROM clientes;", answers: ["DISTINCT", "distinct"], hint: "Palavra-chave para remover duplicatas.", explanation: "`DISTINCT` elimina registros duplicados.", filename: "unique.sql" },
+            { id: 20, tech: "R", category: "Básico", title: "Atribuição em R", desc: "Operador de atribuição nativo na linguagem R.", code: "x ___ 100", answers: ["<-"], hint: "Símbolo menor-que e hífen.", explanation: "`<-` é o operador idiomático de atribuição em R.", filename: "script.R" },
+            { id: 21, tech: "R", category: "Básico", title: "Vetor em R", desc: "Crie um vetor numérico em R.", code: "numeros <- ___(10, 20, 30, 40)\nprint(numeros)", answers: ["c", "c()"], hint: "Função de 1 letra para combinar valores.", explanation: "`c()` concatena valores em um vetor na linguagem R.", filename: "vector.R" },
+            { id: 22, tech: "Pandas", category: "Básico", title: "Seleção de Coluna", desc: "Extraia a coluna 'preco' do DataFrame.", code: "import pandas as pd\ndf = pd.read_csv('produtos.csv')\n\ncoluna_preco = df['___']", answers: ["preco"], hint: "Nome da coluna solicitada.", explanation: "Passar o nome entre colchetes seleciona uma Series.", filename: "column_select.py" },
+            { id: 23, tech: "SQL", category: "Básico", title: "Operador IN", desc: "Filtre status 'Pendente' ou 'Enviado'.", code: "SELECT * FROM pedidos\nWHERE status ___ ('Pendente', 'Enviado');", answers: ["IN", "in"], hint: "Verifica pertencimento a uma lista.", explanation: "`IN` compara com múltiplos valores.", filename: "in_operator.sql" },
+            { id: 24, tech: "NumPy", category: "Básico", title: "Média em Array", desc: "Calcule a média dos elementos do array.", code: "import numpy as np\narr = np.array([10, 20, 30, 40])\nmedia = np.___(arr)", answers: ["mean", "mean()"], hint: "Termo em inglês para média.", explanation: "`np.mean()` calcula a média aritmética.", filename: "mean.py" },
+            { id: 25, tech: "Python", category: "Básico", title: "Conversão Float", desc: "Converta a string em decimal float.", code: "texto = '42.5'\nnumero = ___(texto)\nprint(type(numero))", answers: ["float", "float()"], hint: "Tipo de ponto flutuante.", explanation: "`float()` converte texto numérico em decimal.", filename: "casting.py" },
+
+            // NÍVEIS 26 A 50: INTERMEDIÁRIO
+            { id: 26, tech: "Pandas", category: "Intermediário", title: "Agrupamento GroupBy", desc: "Agrupe dados por 'categoria'.", code: "import pandas as pd\ndf = pd.read_csv('vendas.csv')\n\ngrupado = df.___('categoria')", answers: ["groupby", "groupby()"], hint: "Método de agrupamento.", explanation: "`.groupby()` divide os dados conforme colunas.", filename: "groupby.py" },
+            { id: 27, tech: "Pandas", category: "Intermediário", title: "Soma por Grupo", desc: "Calcule o total da coluna 'valor' por grupo.", code: "import pandas as pd\ndf = pd.read_csv('vendas.csv')\n\ntotal = df.groupby('categoria')['valor'].___()", answers: ["sum", "sum()"], hint: "Método para agregação de soma.", explanation: "`.sum()` calcula o acumulado de cada grupo.", filename: "agg_sum.py" },
+            { id: 28, tech: "SQL", category: "Intermediário", title: "INNER JOIN", desc: "Combine 'pedidos' e 'clientes' com correspondência exata.", code: "SELECT p.id, c.nome \nFROM pedidos p\n___ JOIN clientes c ON p.cliente_id = c.id;", answers: ["INNER", "inner"], hint: "Junção de correspondência exata.", explanation: "`INNER JOIN` combina registros com chaves coincidentes.", filename: "inner_join.sql" },
+            { id: 29, tech: "SQL", category: "Intermediário", title: "GROUP BY", desc: "Agrupe vendas por departamento.", code: "SELECT departamento, SUM(vendas) \nFROM filiais\n___ BY departamento;", answers: ["GROUP", "group"], hint: "Palavra antes de 'BY'.", explanation: "`GROUP BY` organiza dados em grupos agregados.", filename: "group_by.sql" },
+            { id: 30, tech: "Pandas", category: "Intermediário", title: "Merge de DataFrames", desc: "Realize a junção entre dois DataFrames.", code: "import pandas as pd\n\ndf_final = pd.___(df1, df2, on='id_cliente')", answers: ["merge", "merge()"], hint: "Função similar ao JOIN.", explanation: "`pd.merge()` combina DataFrames baseando-se em chaves.", filename: "merge.py" },
+            { id: 31, tech: "NumPy", category: "Intermediário", title: "Máscara Booleana", desc: "Filtre elementos maiores que 50.", code: "import numpy as np\narr = np.array([10, 55, 20, 80, 45])\nfiltro = arr[arr ___ 50]", answers: [">"], hint: "Símbolo de maior que.", explanation: "`>` gera a máscara booleana para seleção.", filename: "boolean_mask.py" },
+            { id: 32, tech: "Seaborn", category: "Intermediário", title: "Scatter Plot", desc: "Plote dispersão entre 'altura' e 'peso'.", code: "import seaborn as sns\n\nsns.___(data=df, x='altura', y='peso')", answers: ["scatterplot", "scatterplot()"], hint: "Gráfico de pontos dispersos.", explanation: "`sns.scatterplot()` plota duas variáveis numéricas.", filename: "scatter.py" },
+            { id: 33, tech: "Pandas", category: "Intermediário", title: "Preencher Nulos", desc: "Substitua NaN por 0 na coluna 'idade'.", code: "import pandas as pd\n\ndf['idade'] = df['idade'].___(0)", answers: ["fillna", "fillna()"], hint: "Significa 'fill NA'.", explanation: "`.fillna()` substitui valores ausentes pelo valor indicado.", filename: "impute.py" },
+            { id: 34, tech: "Pandas", category: "Intermediário", title: "Remover Nulos", desc: "Elimine linhas com dados faltantes.", code: "import pandas as pd\n\ndf_limpo = df.___()", answers: ["dropna", "dropna()"], hint: "Significa 'drop NA'.", explanation: "`.dropna()` descarta linhas/colunas com valores nulos.", filename: "clean_na.py" },
+            { id: 35, tech: "SQL", category: "Intermediário", title: "Filtro HAVING", desc: "Filtre grupos agregados onde a soma supera 10000.", code: "SELECT categoria, SUM(valor) FROM vendas\nGROUP BY categoria\n___ SUM(valor) > 10000;", answers: ["HAVING", "having"], hint: "Filtro para agregações (não WHERE).", explanation: "`HAVING` condiciona os grupos gerados por GROUP BY.", filename: "having.sql" },
+            { id: 36, tech: "SQL", category: "Intermediário", title: "LEFT JOIN", desc: "Traga todos os clientes independente de pedidos.", code: "SELECT c.nome, p.id \nFROM clientes c\n___ JOIN pedidos p ON c.id = p.cliente_id;", answers: ["LEFT", "left"], hint: "Preserva a tabela da esquerda.", explanation: "`LEFT JOIN` mantém todos os registros da tabela esquerda.", filename: "left_join.sql" },
+            { id: 37, tech: "Pandas", category: "Intermediário", title: "Filtro de Estado", desc: "Selecione linhas onde estado seja 'SP'.", code: "import pandas as pd\n\ndf_sp = df.loc[df['estado'] ___ 'SP']", answers: ["=="], hint: "Operador de comparação.", explanation: "`==` avalia a igualdade dentro do loc.", filename: "loc_filter.py" },
+            { id: 38, tech: "NumPy", category: "Intermediário", title: "Reshape de Array", desc: "Redimencione 6 elementos em 2x3.", code: "import numpy as np\narr = np.array([1, 2, 3, 4, 5, 6])\nmatriz = arr.___(2, 3)", answers: ["reshape", "reshape()"], hint: "Método para remodelar formato.", explanation: "`.reshape()` altera dimensões sem mover os dados.", filename: "reshape.py" },
+            { id: 39, tech: "Seaborn", category: "Intermediário", title: "Boxplot", desc: "Crie Boxplot de salários para observar outliers.", code: "import seaborn as sns\n\nsns.___(y=df['salario'])", answers: ["boxplot", "boxplot()"], hint: "Gráfico de caixa.", explanation: "`sns.boxplot()` exibe quartis e pontos fora da curva.", filename: "boxplot.py" },
+            { id: 40, tech: "Pandas", category: "Intermediário", title: "Ordenação Decrescente", desc: "Ordene o DataFrame por pontuação em ordem decrescente.", code: "import pandas as pd\n\ndf_ord = df.sort_values(by='pontuacao', ascending=___)", answers: ["False"], hint: "Booleano para ordem não-ascendente.", explanation: "`ascending=False` ordena do maior para o menor.", filename: "sort.py" },
+            { id: 41, tech: "SQL", category: "Intermediário", title: "Operador LIKE", desc: "Busque nomes que iniciem com a letra 'A'.", code: "SELECT * FROM clientes\nWHERE nome ___ 'A%';", answers: ["LIKE", "like"], hint: "Busca de padrões em texto.", explanation: "`LIKE` com `%` permite buscar por padrões.", filename: "like.sql" },
+            { id: 42, tech: "Pandas", category: "Intermediário", title: "Método Apply", desc: "Aplique uma função em cada item da coluna.", code: "import pandas as pd\n\ndf['preco_novo'] = df['preco'].___(lambda x: x * 1.1)", answers: ["apply", "apply()"], hint: "Aplica funções ao longo da Series.", explanation: "`.apply()` executa a lambda em cada elemento.", filename: "apply.py" },
+            { id: 43, tech: "Matplotlib", category: "Intermediário", title: "Título de Figura", desc: "Adicione título ao gráfico.", code: "import matplotlib.pyplot as plt\n\nplt.plot([1, 2, 3])\nplt.___('Titulo')", answers: ["title", "title()"], hint: "Define o título.", explanation: "`plt.title()` define o cabeçalho do gráfico.", filename: "title.py" },
+            { id: 44, tech: "R", category: "Intermediário", title: "Filter em Dplyr", desc: "Em R, filtre onde 'cyl' é igual a 6.", code: "library(dplyr)\n\ndf_f <- mtcars %>% \n  ___(cyl == 6)", answers: ["filter", "filter()"], hint: "Equivalente ao WHERE.", explanation: "`filter()` seleciona observações que atendam a critérios.", filename: "dplyr_filter.R" },
+            { id: 45, tech: "Pandas", category: "Intermediário", title: "Remover Duplicatas", desc: "Remova registros repetidos por e-mail.", code: "import pandas as pd\n\ndf_u = df.___(subset=['email'])", answers: ["drop_duplicates", "drop_duplicates()"], hint: "Descarte duplicatas.", explanation: "`.drop_duplicates()` remove linhas duplicadas.", filename: "duplicates.py" },
+            { id: 46, tech: "NumPy", category: "Intermediário", title: "Concatenação de Arrays", desc: "Junte dois arrays.", code: "import numpy as np\na = np.array([1, 2])\nb = np.array([3, 4])\nres = np.___((a, b))", answers: ["concatenate", "concatenate()"], hint: "Função para unir matrizes.", explanation: "`np.concatenate()` combina uma sequência de arrays.", filename: "concat.py" },
+            { id: 47, tech: "SQL", category: "Intermediário", title: "Subquery de Média", desc: "Filtre preços acima da média geral.", code: "SELECT * FROM produtos\nWHERE preco > (SELECT ___(preco) FROM produtos);", answers: ["AVG", "avg", "AVG()", "avg()"], hint: "Função de média no SQL.", explanation: "`AVG()` calcula a média em subconsultas.", filename: "subquery.sql" },
+            { id: 48, tech: "Pandas", category: "Intermediário", title: "Conversão Datetime", desc: "Converta coluna de texto para formato data.", code: "import pandas as pd\n\ndf['data'] = pd.___(df['data'])", answers: ["to_datetime", "to_datetime()"], hint: "Converte para tipo datetime.", explanation: "`pd.to_datetime()` faz parsing de strings de data.", filename: "datetime.py" },
+            { id: 49, tech: "Scikit-learn", category: "Intermediário", title: "Divisão de Dados", desc: "Importe a função de separação de treino e teste.", code: "from sklearn.model_selection import ___", answers: ["train_test_split"], hint: "Nome da função train_..._split.", explanation: "`train_test_split` separa matrizes para validação.", filename: "split.py" },
+            { id: 50, tech: "Scikit-learn", category: "Intermediário", title: "Treinamento do Modelo", desc: "Ajuste o modelo de Regressão Logística.", code: "from sklearn.linear_model import LogisticRegression\nmodel = LogisticRegression()\n\nmodel.___(X_train, y_train)", answers: ["fit", "fit()"], hint: "Método de treino de 3 letras.", explanation: "`.fit()` treina o estimador ajustando seus parâmetros.", filename: "train.py" },
+
+            // NÍVEIS 51 A 75: AVANÇADO
+            { id: 51, tech: "Scikit-learn", category: "Avançado", title: "Predições", desc: "Gere previsões do modelo treinado.", code: "y_pred = model.___(X_test)", answers: ["predict", "predict()"], hint: "Método para prever.", explanation: "`.predict()` estima valores para novos dados.", filename: "predict.py" },
+            { id: 52, tech: "SQL", category: "Avançado", title: "Window Function - ROW_NUMBER", desc: "Crie numeração sequencial particionada.", code: "SELECT nome, \nROW_NUMBER() OVER(PARTITION BY dep ORDER BY salario DESC) as ___ \nFROM funcionarios;", answers: ["ranking", "rank", "posicao", "linha"], hint: "Escolha um alias como 'ranking'.", explanation: "`ROW_NUMBER()` atribui um número sequencial por partição.", filename: "window.sql" },
+            { id: 53, tech: "PySpark", category: "Avançado", title: "SparkSession", desc: "Obtenha ou crie a sessão do Spark.", code: "from pyspark.sql import SparkSession\n\nspark = SparkSession.builder.appName('App').___()", answers: ["getOrCreate", "getOrCreate()"], hint: "Cria ou recupera a sessão.", explanation: "`getOrCreate()` inicia ou reutiliza a SparkSession.", filename: "spark_init.py" },
+            { id: 54, tech: "PySpark", category: "Avançado", title: "Leitura de Parquet", desc: "Leia um arquivo no formato Parquet.", code: "df = spark.read.___('dados.parquet')", answers: ["parquet", "parquet()"], hint: "Formato colunar otimizado.", explanation: "`spark.read.parquet()` lê arquivos Parquet nativamente.", filename: "read_parquet.py" },
+            { id: 55, tech: "Scikit-learn", category: "Avançado", title: "Escala MinMax", desc: "Importe o normalizador no intervalo [0, 1].", code: "from sklearn.preprocessing import ___", answers: ["MinMaxScaler"], hint: "Escalonador min-max.", explanation: "`MinMaxScaler` ajusta dados a uma escala delimitada.", filename: "scaler.py" },
+            { id: 56, tech: "Scikit-learn", category: "Avançado", title: "Matriz de Confusão", desc: "Importe a função de matriz de confusão.", code: "from sklearn.metrics import ___", answers: ["confusion_matrix"], hint: "Métrica em snake_case.", explanation: "`confusion_matrix` avalia a acurácia do classificador.", filename: "metrics.py" },
+            { id: 57, tech: "Pandas", category: "Avançado", title: "Pivot Table", desc: "Crie uma tabela dinâmica agregando médias.", code: "import pandas as pd\n\npivot = df.___(index='regiao', columns='ano', values='vendas', aggfunc='mean')", answers: ["pivot_table", "pivot_table()"], hint: "Tabela dinâmica do Pandas.", explanation: "`.pivot_table()` sumariza valores em formato bidimensional.", filename: "pivot.py" },
+            { id: 58, tech: "SQL", category: "Avançado", title: "CTE com Cláusula WITH", desc: "Inicie a definição de uma CTE em SQL.", code: "___ vendas_temp AS (\n  SELECT * FROM vendas WHERE ano = 2023\n)\nSELECT * FROM vendas_temp;", answers: ["WITH", "with"], hint: "Palavra inicial de uma CTE.", explanation: "`WITH` cria tabelas temporárias nomeadas no escopo da query.", filename: "cte.sql" },
+            { id: 59, tech: "Scikit-learn", category: "Avançado", title: "Classe Pipeline", desc: "Encapsule transformações e modelo em um único fluxo.", code: "from sklearn.pipeline import ___", answers: ["Pipeline", "make_pipeline"], hint: "Encadeia etapas de ML.", explanation: "`Pipeline` automatiza o fluxo entre pré-processamento e estimador.", filename: "pipeline.py" },
+            { id: 60, tech: "PySpark", category: "Avançado", title: "Filtro PySpark", desc: "Filtre dados onde a idade é maior que 30.", code: "df_filtrado = df.___(df['idade'] > 30)", answers: ["filter", "filter()", "where", "where()"], hint: "Método filter ou where.", explanation: "`.filter()` aplica condições lógicas no Spark DataFrame.", filename: "pyspark_filter.py" },
+            { id: 61, tech: "PySpark", category: "Avançado", title: "Nova Coluna withColumn", desc: "Crie a coluna 'salario_anual' multiplicando o valor por 12.", code: "df_novo = df.___('salario_anual', df['salario'] * 12)", answers: ["withColumn", "withColumn()"], hint: "Cria ou altera colunas em camelCase.", explanation: "`.withColumn()` adiciona colunas transformadas ao Spark DataFrame.", filename: "with_column.py" },
+            { id: 62, tech: "Pandas", category: "Avançado", title: "Conversão de Tipo astype", desc: "Altere o tipo da coluna para string.", code: "df['codigo'] = df['codigo'].___('str')", answers: ["astype", "astype()"], hint: "Converte tipos de dados.", explanation: "`.astype()` faz o casting do tipo da Series.", filename: "astype.py" },
+            { id: 63, tech: "Scikit-learn", category: "Avançado", title: "OneHotEncoder", desc: "Importe o codificador categórico.", code: "from sklearn.preprocessing import ___", answers: ["OneHotEncoder"], hint: "Codificador de variáveis nominais.", explanation: "`OneHotEncoder` converte variáveis categóricas em vetores binários.", filename: "onehot.py" },
+            { id: 64, tech: "SQL", category: "Avançado", title: "Window Function LAG", desc: "Acesse o valor da linha anterior.", code: "SELECT mes, \n___(faturamento) OVER(ORDER BY mes) as ant\nFROM vendas;", answers: ["LAG", "lag", "LAG()", "lag()"], hint: "Acessa linhas anteriores.", explanation: "`LAG()` busca dados de posições prévias em uma partição.", filename: "lag.sql" },
+            { id: 65, tech: "Scikit-learn", category: "Avançado", title: "Validação Cruzada", desc: "Importe a função cross_val_score.", code: "from sklearn.model_selection import ___", answers: ["cross_val_score"], hint: "Pontuação por validação cruzada.", explanation: "`cross_val_score` avalia a generalização por K-Fold.", filename: "cross_val.py" },
+            { id: 66, tech: "Pandas", category: "Avançado", title: "Operação str.contains", desc: "Filtre textos que contenham o termo 'Erro'.", code: "mask = df['descricao'].str.___('Erro', case=False)\ndf_erros = df[mask]", answers: ["contains", "contains()"], hint: "Busca substrings na Series.", explanation: "`.str.contains()` retorna booleans se o padrão for encontrado.", filename: "str_contains.py" },
+            { id: 67, tech: "PySpark", category: "Avançado", title: "Módulo de Funções Spark", desc: "Importe o pacote de funções do PySpark.", code: "from pyspark.sql.___ import col, mean", answers: ["functions"], hint: "Submódulo de funções de coluna.", explanation: "`pyspark.sql.functions` oferece utilitários otimizados.", filename: "spark_func.py" },
+            { id: 68, tech: "Scikit-learn", category: "Avançado", title: "GridSearchCV", desc: "Importe a busca em grade para hiperparâmetros.", code: "from sklearn.model_selection import ___", answers: ["GridSearchCV"], hint: "Busca exaustiva em grade.", explanation: "`GridSearchCV` testa todas as combinações de parâmetros.", filename: "gridsearch.py" },
+            { id: 69, tech: "SQL", category: "Avançado", title: "Tratamento COALESCE", desc: "Retorne o primeiro valor não nulo.", code: "SELECT ___(tel_movel, tel_fixo, 'S/N') FROM clientes;", answers: ["COALESCE", "coalesce", "COALESCE()", "coalesce()"], hint: "Substitui nulos pela primeira alternativa.", explanation: "`COALESCE()` retorna o primeiro argumento não nulo.", filename: "coalesce.sql" },
+            { id: 70, tech: "Seaborn", category: "Avançado", title: "Heatmap de Correlação", desc: "Plote uma matriz de correlação em estilo heatmap.", code: "import seaborn as sns\ncorr = df.corr()\n\nsns.___(corr, annot=True)", answers: ["heatmap", "heatmap()"], hint: "Mapa de calor.", explanation: "`sns.heatmap()` colore matrizes numéricas dinamicamente.", filename: "heatmap.py" },
+            { id: 71, tech: "Pandas", category: "Avançado", title: "Despivoteamento com Melt", desc: "Transforme colunas em linhas horizontais.", code: "df_unpivoted = pd.___(df, id_vars=['id'])", answers: ["melt", "melt()"], hint: "Converte formato amplo para longo.", explanation: "`pd.melt()` reorganiza o formato tabular do DataFrame.", filename: "melt.py" },
+            { id: 72, tech: "Scikit-learn", category: "Avançado", title: "Random Forest", desc: "Importe o classificador Random Forest.", code: "from sklearn.ensemble import ___", answers: ["RandomForestClassifier"], hint: "Conjunto de árvores de decisão.", explanation: "`RandomForestClassifier` constrói múltiplos estimadores ensemble.", filename: "rf.py" },
+            { id: 73, tech: "PySpark", category: "Avançado", title: "VectorAssembler", desc: "Importe o agrupador de colunas em vetores do Spark.", code: "from pyspark.ml.feature import ___", answers: ["VectorAssembler"], hint: "Montador de vetores de features.", explanation: "`VectorAssembler` agrupa colunas de entrada no formato aceito pelo Spark ML.", filename: "vector_assembler.py" },
+            { id: 74, tech: "SQL", category: "Avançado", title: "Condicional CASE WHEN", desc: "Complete o bloco condicional em SQL.", code: "SELECT id, \n  CASE \n    WHEN valor > 1000 THEN 'ALTO'\n    ___ 'BAIXO'\n  END as risco\nFROM transacoes;", answers: ["ELSE", "else"], hint: "Cláusula para alternativa padrão.", explanation: "`ELSE` define o valor caso nenhuma condição `WHEN` seja satisfeita.", filename: "case_when.sql" },
+            { id: 75, tech: "Python", category: "Avançado", title: "Decoradores e Kwargs", desc: "Repasse argumentos nomeados variáveis ao wrapper.", code: "def meu_decorador(func):\n    def wrapper(*args, **kwargs):\n        print('Executando...')\n        res = func(*args, ___)\n        return res\n    return wrapper", answers: ["**kwargs"], hint: "Sintaxe para argumentos nomeados.", explanation: "`**kwargs` desempacota dicionários de parâmetros passados.", filename: "decorator.py" },
+
+            // NÍVEIS 76 A 100: EXTRAORDINÁRIO
+            { id: 76, tech: "Scikit-learn", category: "Extraordinário", title: "Redução PCA", desc: "Importe o algoritmo de componentes principais.", code: "from sklearn.decomposition import ___", answers: ["PCA"], hint: "Principal Component Analysis.", explanation: "`PCA` reduz dimensionalidade linear conservando variância.", filename: "pca.py" },
+            { id: 77, tech: "Scikit-learn", category: "Extraordinário", title: "ROC-AUC Score", desc: "Importe a métrica roc_auc_score.", code: "from sklearn.metrics import ___", answers: ["roc_auc_score"], hint: "Métrica de curva ROC.", explanation: "`roc_auc_score` calcula a área abaixo da curva de probabilidade.", filename: "roc_auc.py" },
+            { id: 78, tech: "PySpark", category: "Extraordinário", title: "Regressão Logística Spark", desc: "Importe a Regressão Logística no PySpark.", code: "from pyspark.ml.classification import ___", answers: ["LogisticRegression"], hint: "Classificador logístico do Spark.", explanation: "`LogisticRegression` no PySpark treina estimadores escaláveis.", filename: "spark_lr.py" },
+            { id: 79, tech: "Pandas", category: "Extraordinário", title: "Resampling Temporal", desc: "Reamostre dados diários para mensais pela média.", code: "import pandas as pd\n\ndf_m = df.resample('M').___()", answers: ["mean", "mean()"], hint: "Média dos grupos temporais.", explanation: "`.resample('M').mean()` agrupa e tira a média mensal.", filename: "resample.py" },
+            { id: 80, tech: "SQL", category: "Extraordinário", title: "CTE Recursiva", desc: "Defina uma CTE recursiva em SQL.", code: "WITH ___ hierarquia AS (\n  SELECT id FROM funcionarios WHERE gerente_id IS NULL\n  UNION ALL\n  SELECT f.id FROM funcionarios f INNER JOIN hierarquia h ON f.gerente_id = h.id\n)\nSELECT * FROM hierarquia;", answers: ["RECURSIVE", "recursive"], hint: "Instrução de recursividade.", explanation: "`WITH RECURSIVE` habilita autopreferência temporária em grafos/árvores.", filename: "recursive.sql" },
+            { id: 81, tech: "Scikit-learn", category: "Extraordinário", title: "Clusterização KMeans", desc: "Importe o algoritmo de agrupamento KMeans.", code: "from sklearn.cluster import ___", answers: ["KMeans"], hint: "Agrupamento por centroides.", explanation: "`KMeans` agrupa instâncias em K centroides minimizando distâncias.", filename: "kmeans.py" },
+            { id: 82, tech: "Pandas", category: "Extraordinário", title: "Média Móvel (Rolling)", desc: "Calcule média móvel em uma janela de 7 dias.", code: "df['mm7'] = df['vendas'].rolling(window=7).___()", answers: ["mean", "mean()"], hint: "Média da janela deslizante.", explanation: "`.rolling(7).mean()` calcula a média contínua das últimas 7 entradas.", filename: "rolling.py" },
+            { id: 83, tech: "PySpark", category: "Extraordinário", title: "PySpark UDF", desc: "Importe o registrador de UDFs personalizadas.", code: "from pyspark.sql.functions import ___", answers: ["udf"], hint: "User Defined Function.", explanation: "`udf` empacota rotinas Python executáveis no cluster Spark.", filename: "udf.py" },
+            { id: 84, tech: "Scikit-learn", category: "Extraordinário", title: "Detecção de Anomalias", desc: "Importe o Isolation Forest para detecção de outliers.", code: "from sklearn.ensemble import ___", answers: ["IsolationForest"], hint: "Floresta de isolamento.", explanation: "`IsolationForest` detecta anomalias isolando partições de dados.", filename: "isolation_forest.py" },
+            { id: 85, tech: "SQL", category: "Extraordinário", title: "Particionamento NTILE", desc: "Divida os registros ordenados em 4 quartis numéricos.", code: "SELECT salario, \n___(4) OVER(ORDER BY salario) as quartil\nFROM funcionarios;", answers: ["NTILE", "ntile", "NTILE()", "ntile()"], hint: "Função para divisão em N baldes.", explanation: "`NTILE(n)` distribui linhas ordenadas em N partições iguais.", filename: "ntile.sql" },
+            { id: 86, tech: "Scikit-learn", category: "Extraordinário", title: "Gradient Boosting", desc: "Importe o estimador GradientBoostingClassifier.", code: "from sklearn.ensemble import ___", answers: ["GradientBoostingClassifier"], hint: "Ensemble sequencial de gradient boosting.", explanation: "`GradientBoostingClassifier` ajusta árvores sequencialmente.", filename: "gbc.py" },
+            { id: 87, tech: "Pandas", category: "Extraordinário", title: "Mudança Percentual", desc: "Calcule a variação relativa percentual.", code: "df['retorno'] = df['cotacao'].___()", answers: ["pct_change", "pct_change()"], hint: "Percentage change.", explanation: "`.pct_change()` calcula o crescimento relativo referente ao item anterior.", filename: "pct_change.py" },
+            { id: 88, tech: "PySpark", category: "Extraordinário", title: "Cache de DataFrame", desc: "Armazene o DataFrame intermediário em memória.", code: "df_otimizado = df.___()", answers: ["cache", "cache()", "persist", "persist()"], hint: "Armazena em memória.", explanation: "`.cache()` evita a re-computação de grafos de execução Spark.", filename: "cache.py" },
+            { id: 89, tech: "Scikit-learn", category: "Extraordinário", title: "RandomizedSearchCV", desc: "Importe a busca aleatória de hiperparâmetros.", code: "from sklearn.model_selection import ___", answers: ["RandomizedSearchCV"], hint: "Busca estocástica de parâmetros.", explanation: "`RandomizedSearchCV` amostrara configurações aleatórias de parâmetros.", filename: "random_search.py" },
+            { id: 90, tech: "SQL", category: "Extraordinário", title: "Concatenação de Strings Agregadas", desc: "Concatene strings de itens por pedido.", code: "SELECT pedido_id, \n___(produto_nome, ', ') as lista\nFROM itens GROUP BY pedido_id;", answers: ["STRING_AGG", "string_agg", "GROUP_CONCAT", "group_concat"], hint: "STRING_AGG no PostgreSQL ou GROUP_CONCAT no MySQL.", explanation: "`STRING_AGG` agrupa textos em uma única linha com delimitador.", filename: "string_agg.sql" },
+            { id: 91, tech: "Python", category: "Extraordinário", title: "Itertools Product", desc: "Calcule o produto cartesiano de duas coleções.", code: "import itertools\n\ncombinacoes = list(itertools.___([1, 2], ['A', 'B']))", answers: ["product", "product()"], hint: "Produto cartesiano.", explanation: "`itertools.product()` gera combinações cartesianas.", filename: "cartesian.py" },
+            { id: 92, tech: "Scikit-learn", category: "Extraordinário", title: "Vetorização TF-IDF", desc: "Importe o transformador de textos TfidfVectorizer.", code: "from sklearn.feature_extraction.text import ___", answers: ["TfidfVectorizer"], hint: "Matriz TF-IDF para PLN.", explanation: "`TfidfVectorizer` converte texto em representação numérica ponderada.", filename: "tfidf.py" },
+            { id: 93, tech: "PySpark", category: "Extraordinário", title: "Função Explode", desc: "Desdobre elementos de uma lista em múltiplas linhas.", code: "from pyspark.sql.functions import ___ \n\ndf_flat = df.select(explode(df['tags']))", answers: ["explode", "explode()"], hint: "Expande coleções em linhas.", explanation: "`explode()` expande elementos de listas em novas observações.", filename: "explode.py" },
+            { id: 94, tech: "Pandas", category: "Extraordinário", title: "Tabela Cruzada Crosstab", desc: "Calcule a frequência de contagem entre dois fatores.", code: "import pandas as pd\n\ntabela = pd.___(df['genero'], df['comprou'])", answers: ["crosstab", "crosstab()"], hint: "Contagem de frequência cruzada.", explanation: "`pd.crosstab()` gera tabelas de contingência.", filename: "crosstab.py" },
+            { id: 95, tech: "Scikit-learn", category: "Extraordinário", title: "Técnica SMOTE", desc: "Importe a técnica SMOTE para balanceamento sintético.", code: "from imblearn.over_sampling import ___", answers: ["SMOTE"], hint: "Synthetic Minority Over-sampling Technique.", explanation: "`SMOTE` gera observações sintéticas para classes minoritárias.", filename: "smote.py" },
+            { id: 96, tech: "SQL", category: "Extraordinário", title: "Comando MERGE", desc: "Comando SQL para operação de UPSERT.", code: "___ INTO destino d\nUSING origem o ON d.id = o.id\nWHEN MATCHED THEN UPDATE SET d.v = o.v;", answers: ["MERGE", "merge"], hint: "Operação combinada de Insert/Update.", explanation: "`MERGE` atualiza ou insere dados dinamicamente conforme condição.", filename: "merge_sql.sql" },
+            { id: 97, tech: "PySpark", category: "Extraordinário", title: "Especificação Window Spark", desc: "Defina ordenação na janela do PySpark.", code: "from pyspark.sql.window import Window\n\njanela = Window.partitionBy('cliente').___('data')", answers: ["orderBy", "orderBy()"], hint: "Ordena a partição em camelCase.", explanation: "`Window.partitionBy().orderBy()` estabelece a sequência da janela.", filename: "spark_window.py" },
+            { id: 98, tech: "Scikit-learn", category: "Extraordinário", title: "Clusterização DBSCAN", desc: "Importe o algoritmo não supervisionado DBSCAN.", code: "from sklearn.cluster import ___", answers: ["DBSCAN"], hint: "Agrupamento baseado em densidade.", explanation: "`DBSCAN` identifica grupos de alta densidade e isola ruídos.", filename: "dbscan.py" },
+            { id: 99, tech: "Python", category: "Extraordinário", title: "Metaclasses em Python", desc: "Defina uma metaclasse herdando do tipo base.", code: "class MinhaMetaclasse(___):\n    def __new__(cls, name, bases, dct):\n        return super().__new__(cls, name, bases, dct)", answers: ["type"], hint: "Classe base de todos os tipos.", explanation: "`type` é a classe fundamental para construção de metaclasses.", filename: "metaclass.py" },
+            { id: 100, tech: "Scikit-learn", category: "Extraordinário", title: "Stacking Classifier", desc: "Importe o classificador ensemble por empilhamento.", code: "from sklearn.ensemble import ___", answers: ["StackingClassifier"], hint: "Empilhamento de estimadores.", explanation: "`StackingClassifier` combina múltiplos estimadores através de um metamodelo.", filename: "stacking.py" }
+        ];
+
+        let state = {
+            currentLevel: 1,
+            completedLevels: [],
+            score: 0,
+            streak: 0,
+            filter: 'all'
+        };
+
+        function loadState() {
+            const saved = localStorage.getItem('ds_code_quest_state');
+            if (saved) {
+                try {
+                    const parsed = JSON.parse(saved);
+                    state = { ...state, ...parsed };
+                } catch(e) {
+                    console.error("Erro ao carregar estado", e);
+                }
+            }
+            if (state.currentLevel < 1 || state.currentLevel > 100) state.currentLevel = 1;
+        }
+
+        function saveState() {
+            localStorage.setItem('ds_code_quest_state', JSON.stringify(state));
+        }
+
+        const currentLevelNumEl = document.getElementById('currentLevelNum');
+        const techBadgeEl = document.getElementById('techBadge');
+        const difficultyBadgeEl = document.getElementById('difficultyBadge');
+        const questionTitleEl = document.getElementById('questionTitle');
+        const questionDescEl = document.getElementById('questionDesc');
+        const codeSnippetEl = document.getElementById('codeSnippet');
+        const filenameTextEl = document.getElementById('filenameText');
+        const answerInputEl = document.getElementById('answerInput');
+        const answerFormEl = document.getElementById('answerForm');
+        const hintBtnEl = document.getElementById('hintBtn');
+        const revealBtnEl = document.getElementById('revealBtn');
+        const hintBoxEl = document.getElementById('hintBox');
+        const hintTextEl = document.getElementById('hintText');
+
+        const feedbackContainer = document.getElementById('feedbackContainer');
+        const feedbackIcon = document.getElementById('feedbackIcon');
+        const feedbackTitle = document.getElementById('feedbackTitle');
+        const feedbackText = document.getElementById('feedbackText');
+        const explanationText = document.getElementById('explanationText');
+        const nextLevelFeedbackBtn = document.getElementById('nextLevelFeedbackBtn');
+
+        const streakCountEl = document.getElementById('streakCount');
+        const scoreCountEl = document.getElementById('scoreCount');
+        const completedCountEl = document.getElementById('completedCount');
+        const progressBarEl = document.getElementById('progressBar');
+
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+        const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+        const levelsSidebar = document.getElementById('levelsSidebar');
+        const levelsGrid = document.getElementById('levelsGrid');
+        const resetProgressBtn = document.getElementById('resetProgressBtn');
+
+        function renderCurrentLevel() {
+            const lvl = levels.find(l => l.id === state.currentLevel);
+            if (!lvl) return;
+
+            feedbackContainer.classList.add('hidden');
+            hintBoxEl.classList.add('hidden');
+            answerInputEl.value = '';
+            answerInputEl.focus();
+
+            currentLevelNumEl.textContent = lvl.id;
+            questionTitleEl.textContent = lvl.title;
+            questionDescEl.textContent = lvl.desc;
+            filenameTextEl.textContent = lvl.filename || 'script.py';
+
+            difficultyBadgeEl.textContent = lvl.category;
+            let diffColor = 'bg-slate-800 text-slate-300 border-slate-700';
+            if (lvl.category === 'Básico') diffColor = 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30';
+            else if (lvl.category === 'Intermediário') diffColor = 'bg-blue-500/20 text-blue-300 border-blue-500/30';
+            else if (lvl.category === 'Avançado') diffColor = 'bg-purple-500/20 text-purple-300 border-purple-500/30';
+            else if (lvl.category === 'Extraordinário') diffColor = 'bg-amber-500/20 text-amber-300 border-amber-500/30';
+
+            difficultyBadgeEl.className = `px-3 py-1 rounded-md text-xs font-medium border ${diffColor}`;
+
+            let techIcon = 'fa-code';
+            if (lvl.tech === 'Python') techIcon = 'fa-brands fa-python text-yellow-400';
+            else if (lvl.tech === 'Pandas') techIcon = 'fa-solid fa-table text-indigo-400';
+            else if (lvl.tech === 'NumPy') techIcon = 'fa-solid fa-cubes text-blue-400';
+            else if (lvl.tech === 'SQL') techIcon = 'fa-solid fa-database text-sky-400';
+            else if (lvl.tech === 'Scikit-learn') techIcon = 'fa-solid fa-brain text-orange-400';
+            else if (lvl.tech === 'PySpark') techIcon = 'fa-solid fa-bolt text-orange-500';
+            else if (lvl.tech === 'Matplotlib' || lvl.tech === 'Seaborn') techIcon = 'fa-chart-line text-emerald-400';
+            else if (lvl.tech === 'R') techIcon = 'fa-solid fa-r text-blue-500';
+
+            techBadgeEl.innerHTML = `<i class="${techIcon}"></i> ${lvl.tech}`;
+
+            const formattedCode = escapeHtml(lvl.code).replace('___', `<span class="inline-block bg-blue-900/80 border border-blue-500/80 text-yellow-300 font-bold px-2 py-0.5 rounded animate-pulse">___</span>`);
+            codeSnippetEl.innerHTML = formattedCode;
+
+            prevBtn.disabled = (state.currentLevel === 1);
+            nextBtn.disabled = (state.currentLevel === 100);
+
+            updateStatsUI();
+            renderLevelsGrid();
+        }
+
+        function escapeHtml(text) {
+            return text.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        }
+
+        function updateStatsUI() {
+            streakCountEl.textContent = state.streak;
+            scoreCountEl.textContent = state.score;
+            completedCountEl.textContent = state.completedLevels.length;
+
+            const percentage = Math.round((state.completedLevels.length / 100) * 100);
+            progressBarEl.style.width = `${percentage}%`;
+        }
+
+        function renderLevelsGrid() {
+            levelsGrid.innerHTML = '';
+            
+            levels.forEach(lvl => {
+                if (state.filter === 'basic' && (lvl.id < 1 || lvl.id > 25)) return;
+                if (state.filter === 'inter' && (lvl.id < 26 || lvl.id > 50)) return;
+                if (state.filter === 'adv' && (lvl.id < 51 || lvl.id > 75)) return;
+                if (state.filter === 'extra' && (lvl.id < 76 || lvl.id > 100)) return;
+
+                const isCompleted = state.completedLevels.includes(lvl.id);
+                const isCurrent = lvl.id === state.currentLevel;
+
+                const btn = document.createElement('button');
+                btn.className = `h-10 text-xs font-bold rounded-lg border transition-all flex items-center justify-center relative ${
+                    isCurrent 
+                        ? 'bg-blue-600 text-white border-blue-400 ring-2 ring-blue-500/50' 
+                        : isCompleted 
+                        ? 'bg-emerald-950/60 text-emerald-400 border-emerald-800 hover:bg-emerald-900/80' 
+                        : 'bg-slate-800/80 text-slate-400 border-slate-700 hover:bg-slate-700 hover:text-white'
+                }`;
+
+                btn.innerHTML = `
+                    <span>${lvl.id}</span>
+                    ${isCompleted ? '<i class="fa-solid fa-check text-[9px] absolute top-1 right-1 text-emerald-400"></i>' : ''}
+                `;
+
+                btn.addEventListener('click', () => {
+                    state.currentLevel = lvl.id;
+                    saveState();
+                    renderCurrentLevel();
+                    levelsSidebar.classList.add('translate-x-full');
+                });
+
+                levelsGrid.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(e) {
+            if (e) e.preventDefault();
+            const inputVal = answerInputEl.value.trim();
+            if (!inputVal) return;
+
+            const lvl = levels.find(l => l.id === state.currentLevel);
+            if (!lvl) return;
+
+            const isCorrect = lvl.answers.some(ans => {
+                const normAns = ans.trim().toLowerCase();
+                const normInput = inputVal.toLowerCase();
+                return normInput === normAns || normInput === normAns.replace(/\(\)/g, '');
+            });
+
+            feedbackContainer.classList.remove('hidden', 'bg-emerald-950/40', 'border-emerald-500/40', 'bg-rose-950/40', 'border-rose-500/40', 'glow-success', 'glow-error');
+
+            if (isCorrect) {
+                feedbackContainer.classList.add('bg-emerald-950/40', 'border-emerald-500/40', 'glow-success');
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-check text-emerald-400"></i>';
+                feedbackTitle.className = "font-bold text-lg mb-1 text-emerald-300";
+                feedbackTitle.textContent = "Excelente! Resposta Correta!";
+                feedbackText.textContent = `Código verificado e executado com sucesso!`;
+                explanationText.textContent = lvl.explanation;
+
+                if (!state.completedLevels.includes(lvl.id)) {
+                    state.completedLevels.push(lvl.id);
+                    state.score += 10 + (state.streak * 2);
+                    state.streak += 1;
+                }
+            } else {
+                feedbackContainer.classList.add('bg-rose-950/40', 'border-rose-500/40', 'glow-error');
+                feedbackIcon.innerHTML = '<i class="fa-solid fa-circle-xmark text-rose-400"></i>';
+                feedbackTitle.className = "font-bold text-lg mb-1 text-rose-300";
+                feedbackTitle.textContent = "Sintaxe Errada ou Incompleta";
+                feedbackText.textContent = `A entrada '${inputVal}' gerou um erro de validação. Revise a resposta e tente novamente.`;
+                explanationText.textContent = "Atenção a letras maiúsculas/minúsculas e pontuações do código.";
+                
+                state.streak = 0;
+            }
+
+            saveState();
+            updateStatsUI();
+            renderLevelsGrid();
+            feedbackContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+
+        answerFormEl.addEventListener('submit', checkAnswer);
+
+        hintBtnEl.addEventListener('click', () => {
+            const lvl = levels.find(l => l.id === state.currentLevel);
+            if (lvl) {
+                hintTextEl.textContent = lvl.hint;
+                hintBoxEl.classList.remove('hidden');
+            }
+        });
+
+        revealBtnEl.addEventListener('click', () => {
+            const lvl = levels.find(l => l.id === state.currentLevel);
+            if (lvl) {
+                answerInputEl.value = lvl.answers[0];
+                answerInputEl.focus();
+            }
+        });
+
+        nextLevelFeedbackBtn.addEventListener('click', () => {
+            if (state.currentLevel < 100) {
+                state.currentLevel += 1;
+                saveState();
+                renderCurrentLevel();
+            }
+        });
+
+        prevBtn.addEventListener('click', () => {
+            if (state.currentLevel > 1) {
+                state.currentLevel -= 1;
+                saveState();
+                renderCurrentLevel();
+            }
+        });
+
+        nextBtn.addEventListener('click', () => {
+            if (state.currentLevel < 100) {
+                state.currentLevel += 1;
+                saveState();
+                renderCurrentLevel();
+            }
+        });
+
+        toggleSidebarBtn.addEventListener('click', () => {
+            levelsSidebar.classList.toggle('translate-x-full');
+        });
+
+        closeSidebarBtn.addEventListener('click', () => {
+            levelsSidebar.classList.add('translate-x-full');
+        });
+
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.filter-btn').forEach(b => {
+                    b.classList.remove('bg-blue-600', 'text-white');
+                    b.classList.add('bg-slate-800', 'text-slate-300');
+                });
+                e.target.classList.remove('bg-slate-800', 'text-slate-300');
+                e.target.classList.add('bg-blue-600', 'text-white');
+
+                state.filter = e.target.getAttribute('data-filter');
+                renderLevelsGrid();
+            });
+        });
+
+        resetProgressBtn.addEventListener('click', () => {
+            state = {
+                currentLevel: 1,
+                completedLevels: [],
+                score: 0,
+                streak: 0,
+                filter: 'all'
+            };
+            saveState();
+            renderCurrentLevel();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' && e.ctrlKey) {
+                if (state.currentLevel < 100) {
+                    state.currentLevel++;
+                    saveState();
+                    renderCurrentLevel();
+                }
+            } else if (e.key === 'ArrowLeft' && e.ctrlKey) {
+                if (state.currentLevel > 1) {
+                    state.currentLevel--;
+                    saveState();
