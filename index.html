@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Tech Code Quest - 300 Níveis (Python, SQL & HTML)</title>
+    <title>Tech Code Quest - 300 Níveis (Python Data Science, SQL & HTML)</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -78,7 +78,7 @@
                     <h1 class="font-bold text-lg leading-tight bg-gradient-to-r from-blue-400 via-indigo-300 to-purple-400 bg-clip-text text-transparent">
                         Code Quest: Data & Dev Pro
                     </h1>
-                    <p class="text-xs text-slate-400">300 Desafios Dinâmicos por Trilha</p>
+                    <p class="text-xs text-slate-400">300 Desafios Práticos por Linguagem</p>
                 </div>
             </div>
 
@@ -269,7 +269,7 @@
 
             <div class="p-3 border-t border-slate-800 bg-slate-950/80 text-center">
                 <button id="resetProgressBtn" class="text-xs text-rose-400 hover:text-rose-300 transition flex items-center justify-center gap-1.5 w-full py-1.5">
-                    <i class="fa-solid fa-rotate-left"></i> Reiniciar Progresso desta Trilha
+                    <i class="fa-solid fa-rotate-left"></i> Reiniciar Todo o Progresso
                 </button>
             </div>
         </aside>
@@ -279,115 +279,111 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             
-            // BANCO DE DADOS DE PERGUNTAS E GERADOR DINÂMICO ATÉ O NÍVEL 300
-            const db = {
-                python: [
-                    // MÓDULO 1: BÁSICO (1-50)
-                    { id: 1, tech: "Python", category: "Iniciante", title: "Primeira Mensagem", desc: "Exiba um texto no console.", code: "___('Iniciando análise de dados')", answers: ["print", "print()"], hint: "Função integrada para impressão.", explanation: "`print()` exibe saídas no console.", filename: "app.py" },
-                    { id: 2, tech: "Python", category: "Iniciante", title: "Definição de String", desc: "Textos são delimitados por aspas.", code: "coluna = ___vendas___", answers: ['"'], hint: "Use aspas.", explanation: "Strings usam aspas simples ou duplas.", filename: "vars.py" },
-                    { id: 3, tech: "Python", category: "Iniciante", title: "Listas Numéricas", desc: "Listas de dados usam colchetes.", code: "precos = ___10.5, 20.0, 15.7___", answers: ["[]", "[ ]"], hint: "Colchetes quadricularizados.", explanation: "Listas organizam sequências numéricas.", filename: "listas.py" },
-                    
-                    // MÓDULO 2: PANDAS E ANÁLISE DE DADOS (51-100)
-                    { id: 51, tech: "Python / Pandas", category: "Data Science", title: "Importação do Pandas", desc: "Importe a principal biblioteca para análise de dados.", code: "import pandas as ___", answers: ["pd"], hint: "Alias padrão da comunidade.", explanation: "`pd` é a convenção universal para o Pandas.", filename: "analysis.py" },
-                    { id: 52, tech: "Python / Pandas", category: "Data Science", title: "Leitura de Arquivo CSV", desc: "Carregue o dataset de vendas em um DataFrame.", code: "df = pd.___('vendas.csv')", answers: ["read_csv", "read_csv()"], hint: "Função iniciada por 'read_'.", explanation: "`read_csv` transforma dados CSV em DataFrames.", filename: "data_load.py" },
-                    { id: 53, tech: "Python / Pandas", category: "Data Science", title: "Inspeção Inicial", desc: "Exiba as 5 primeiras linhas do DataFrame.", code: "print(df.___())", answers: ["head", "head()"], hint: "Método que significa 'cabeça'.", explanation: "`.head()` retorna os primeiros registros.", filename: "inspect.py" },
-                    { id: 54, tech: "Python / Pandas", category: "Data Science", title: "Resumo Estatístico", desc: "Gere estatísticas descritivas das colunas numéricas.", code: "resumo = df.___()", answers: ["describe", "describe()"], hint: "Método para resumos.", explanation: "`.describe()` mostra média, desvio padrão, min e max.", filename: "stats.py" },
-                    { id: 55, tech: "Python / Pandas", category: "Data Science", title: "Filtragem de Colunas", desc: "Selecione apenas a coluna 'faturamento'.", code: "faturamento = df['___']", answers: ["faturamento"], hint: "Nome exato da coluna.", explanation: "Usar colchetes com o nome extrai uma Series.", filename: "filter.py" },
-                    { id: 56, tech: "Python / Pandas", category: "Data Science", title: "Agrupamento de Dados", desc: "Agrupe as vendas por região.", code: "grupo = df.___('regiao')", answers: ["groupby", "groupby()"], hint: "Método de agrupamento.", explanation: "`.groupby()` divide os dados para análise agregada.", filename: "groupby.py" },
-                    { id: 57, tech: "Python / Pandas", category: "Data Science", title: "Tratamento de Dados Ausentes", desc: "Substitua valores nulos (NaN) por zero.", code: "df_limpo = df.___ (0)", answers: ["fillna", "fillna()"], hint: "Significa 'fill NA'.", explanation: "`.fillna()` limpa falhas em conjuntos de dados.", filename: "clean.py" }
-                ],
+            // LIMPEZA AUTOMÁTICA DE VERSÕES ANTIGAS DO LOCALSTORAGE
+            localStorage.removeItem('ds_quest_state');
+            localStorage.removeItem('code_quest_multi_lang');
 
-                sql: [
-                    { id: 1, tech: "SQL", category: "Iniciante", title: "Consulta Simples", desc: "Selecione todos os registros.", code: "___ * FROM clientes;", answers: ["SELECT", "select"], hint: "Comando de busca.", explanation: "`SELECT *` retorna todas as colunas.", filename: "query.sql" },
-                    { id: 51, tech: "SQL Analytics", category: "Data Analytics", title: "Agregação de Negócios", desc: "Calcule a receita total por categoria.", code: "SELECT categoria, SUM(receita)\nFROM vendas\n___ BY categoria;", answers: ["GROUP", "group"], hint: "Agrupa por colunas.", explanation: "`GROUP BY` é essencial para sumarização.", filename: "analytics.sql" },
-                    { id: 52, tech: "SQL Analytics", category: "Data Analytics", title: "Filtro de Agrupamento", desc: "Filtre categorias com faturamento maior que 50.000.", code: "GROUP BY categoria\n___ SUM(receita) > 50000;", answers: ["HAVING", "having"], hint: "Filtro pós-agregação.", explanation: "`HAVING` filtra os resultados do GROUP BY.", filename: "having.sql" },
-                    { id: 53, tech: "SQL Analytics", category: "Data Analytics", title: "Janelas Analíticas (Window Functions)", desc: "Calcule a média móvel usando qual cláusula analítica?", code: "AVG(valor) OVER (___ BY data)", answers: ["ORDER", "order"], hint: "Ordena a janela de tempo.", explanation: "`OVER (ORDER BY ...)` define o contexto da Window Function.", filename: "window.sql" }
-                ],
+            // MONTAGEM DO BANCO DE DADOS DE 300 NÍVEIS POR LINGUAGEM
+            const db = { python: [], sql: [], html: [] };
 
-                html: [
-                    { id: 1, tech: "HTML", category: "Iniciante", title: "Título do Dashboard", desc: "Crie o cabeçalho principal.", code: "<___>Dashboard de Vendas</h1 >", answers: ["h1"], hint: "Tag de título nível 1.", explanation: "`<h1>` cria o título de maior relevância.", filename: "dashboard.html" },
-                    { id: 51, tech: "HTML Dashboards", category: "Web Analytics", title: "Incorporação de Gráficos", desc: "Insira a tag de tela interativa para bibliotecas como Chart.js.", code: "<___ id='graficoVendas'></canvas>", answers: ["canvas"], hint: "Tag gráfica HTML5.", explanation: "`<canvas>` possibilita a renderização de gráficos dinâmicos via JS.", filename: "chart.html" },
-                    { id: 52, tech: "HTML Dashboards", category: "Web Analytics", title: "Contêiner de Métricas", desc: "Crie a estrutura de um card de KPI.", code: "<___ class='kpi-card'>\n  <h3>Total Vendas</h3>\n</div>", answers: ["div"], hint: "Bloco genérico.", explanation: "`<div>` estrutura blocos e cards de relatórios.", filename: "kpi.html" }
-                ]
-            };
+            const techNames = { python: "PYTHON", sql: "SQL", html: "HTML" };
 
-            // GERADOR DINÂMICO PARA GARANTIR OS 300 NÍVEIS POR LINGUAGEM
-            Object.keys(db).forEach(lang => {
-                const currentList = db[lang];
-                const existingIds = new Set(currentList.map(item => item.id));
-
+            // GERADOR DOS 300 NÍVEIS DINÂMICOS
+            ['python', 'sql', 'html'].forEach(lang => {
                 for (let i = 1; i <= 300; i++) {
-                    if (!existingIds.has(i)) {
-                        let cat = "Fundamentos";
-                        let topic = "";
-                        let codeTpl = "";
-                        let ans = [];
-                        let exp = "";
+                    let cat = "";
+                    let topic = "";
+                    let codeTpl = "";
+                    let ans = [];
+                    let exp = "";
+                    let fileExt = lang === 'python' ? 'py' : lang === 'sql' ? 'sql' : 'html';
 
-                        if (i <= 50) {
-                            cat = "Iniciante";
-                            topic = "Fundamentos de Lógica e Sintaxe";
-                        } else if (i <= 100) {
-                            cat = "Data Analytics";
-                            topic = "Manipulação e Limpeza de Dados";
-                        } else if (i <= 200) {
-                            cat = "Advanced Data Science";
-                            topic = "Análise Exploratória e Modelagem";
-                        } else {
-                            cat = "Especialista em Engenharia de Dados";
-                            topic = "Otimização, Métricas e Dashboards Avançados";
-                        }
-
-                        if (lang === 'python') {
-                            if (i > 100 && i <= 200) {
-                                codeTpl = `# Análise Exploratória (Nível ${i})\nimport matplotlib.pyplot as plt\n\nplt.___ (df['vendas'])\nplt.show()`;
-                                ans = ["plot", "hist", "boxplot"];
-                                exp = "Funções de visualização para análise de distribuição de dados.";
-                            } else if (i > 200) {
-                                codeTpl = `# Pipeline Avançado de Machine Learning / Métricas (Nível ${i})\nfrom sklearn.model_selection import ___\n\nX_train, X_test = train_test_split(X, y)`;
-                                ans = ["train_test_split"];
-                                exp = "Divisão de dados para treinamento e teste em modelos preditivos.";
-                            } else {
-                                codeTpl = `# Operação de Dados Nível ${i}\nimport pandas as pd\n\nresultado = df.___()`;
-                                ans = ["mean", "sum", "count", "dropna", "pivot_table"];
-                                exp = "Operação essencial para consolidação de datasets.";
-                            }
-                        } else if (lang === 'sql') {
-                            if (i > 100) {
-                                codeTpl = `-- Análise Avançada SQL (Nível ${i})\nWITH cte AS (\n    SELECT id FROM clientes\n)\nSELECT * ___ cte;`;
-                                ans = ["FROM", "from"];
-                                exp = "Consultas usando CTEs (Common Table Expressions) para análises complexas.";
-                            } else {
-                                codeTpl = `-- Análise de Dados SQL (Nível ${i})\nSELECT * FROM vendas\nWHERE valor ___ 1000;`;
-                                ans = [">", "<", "=", ">="];
-                                exp = "Filtro condicional sobre registros da base de dados.";
-                            }
-                        } else {
-                            codeTpl = `<!-- Estrutura de Dashboard Nível ${i} -->\n<div class="kpi-box">\n  <___ class="val">R$ 100.000</span>\n</div>`;
-                            ans = ["span", "p", "h2"];
-                            exp = "Elementos de marcação HTML5 para dashboards e relatórios web.";
-                        }
-
-                        currentList.push({
-                            id: i,
-                            tech: lang.toUpperCase(),
-                            category: cat,
-                            title: `Nível ${i}: ${topic}`,
-                            desc: `Complete a lacuna de código referente ao nível ${i} da trilha de ${lang.toUpperCase()}.`,
-                            code: codeTpl,
-                            answers: ans,
-                            hint: `Analise o contexto do código para ${topic}.`,
-                            explanation: exp,
-                            filename: `desafio_${i}.${lang === 'python' ? 'py' : lang === 'sql' ? 'sql' : 'html'}`
-                        });
+                    if (i <= 50) {
+                        cat = "Fundamentos Básicos";
+                        topic = "Sintaxe e Lógica Inicial";
+                    } else if (i <= 100) {
+                        cat = "Data Analytics & Manipulação";
+                        topic = "Tratamento e Estruturação de Dados";
+                    } else if (i <= 200) {
+                        cat = "Data Science & Análise Avançada";
+                        topic = "Estatística, Agrupamentos e Gráficos";
+                    } else {
+                        cat = "Especialista em Engenharia de Dados";
+                        topic = "Machine Learning e Dashboards";
                     }
+
+                    if (lang === 'python') {
+                        if (i === 1) {
+                            codeTpl = "___('Iniciando análise de dados em Python')";
+                            ans = ["print", "print()"];
+                            exp = "`print()` exibe mensagens ou saídas no console.";
+                        } else if (i <= 50) {
+                            codeTpl = `# Lógica Básica (Nível ${i})\ndados = [10, 20, 30]\ntotal = ___(dados)`;
+                            ans = ["sum", "len", "max", "min"];
+                            exp = "Função integrada nativa para cálculos operacionais.";
+                        } else if (i <= 100) {
+                            codeTpl = `# Análise com Pandas (Nível ${i})\nimport pandas as pd\n\ndf = pd.read_csv('vendas.csv')\nresumo = df.___()`;
+                            ans = ["head", "describe", "info", "dropna", "fillna", "groupby"];
+                            exp = "Método da biblioteca Pandas essencial para manipulação e limpeza de dados.";
+                        } else if (i <= 200) {
+                            codeTpl = `# Visualização de Dados (Nível ${i})\nimport matplotlib.pyplot as plt\n\nplt.___ (df['faturamento'])\nplt.show()`;
+                            ans = ["plot", "hist", "boxplot", "bar"];
+                            exp = "Função de plotagem gráfica para análise exploratória de dados.";
+                        } else {
+                            codeTpl = `# Machine Learning & Pipelines (Nível ${i})\nfrom sklearn.model_selection import ___\n\nX_train, X_test = train_test_split(X, y)`;
+                            ans = ["train_test_split"];
+                            exp = "Função para divisão de dados entre grupos de treino e teste em modelos preditivos.";
+                        }
+                    } else if (lang === 'sql') {
+                        if (i === 1) {
+                            codeTpl = "___ * FROM vendas;";
+                            ans = ["SELECT", "select"];
+                            exp = "`SELECT *` busca todas as colunas de uma tabela.";
+                        } else if (i <= 100) {
+                            codeTpl = `-- Análise SQL (Nível ${i})\nSELECT categoria, SUM(valor)\nFROM vendas\n___ BY categoria;`;
+                            ans = ["GROUP", "group"];
+                            exp = "`GROUP BY` agrupa os registros para realizar cálculos de agregação.";
+                        } else if (i <= 200) {
+                            codeTpl = `-- SQL Analytics (Nível ${i})\nSELECT cliente, AVG(valor) OVER (___ BY data)\nFROM pedidos;`;
+                            ans = ["ORDER", "order"];
+                            exp = "Cláusula para funções de janela (Window Functions) analíticas.";
+                        } else {
+                            codeTpl = `-- Advanced SQL (Nível ${i})\nWITH tabela_cte AS (\n    SELECT id FROM clientes\n)\nSELECT * ___ tabela_cte;`;
+                            ans = ["FROM", "from"];
+                            exp = "Consulta avançada utilizando Common Table Expressions (CTEs).";
+                        }
+                    } else {
+                        if (i === 1) {
+                            codeTpl = "<___>Dashboard de Resultados</h1 >";
+                            ans = ["h1"];
+                            exp = "`<h1>` cria o título principal de maior importância na página.";
+                        } else if (i <= 100) {
+                            codeTpl = `<!-- Estrutura de Card KPI (Nível ${i}) -->\n<div class="kpi-card">\n  <___ class="titulo">Métrica</h3>\n</div>`;
+                            ans = ["h3", "h2", "span"];
+                            exp = "Elemento de marcação HTML5 para componentes de relatórios.";
+                        } else {
+                            codeTpl = `<!-- Dashboard Gráfico HTML5 (Nível ${i}) -->\n<___ id="chartVendas"></canvas>`;
+                            ans = ["canvas"];
+                            exp = "`<canvas>` possibilita a renderização de gráficos dinâmicos e dashboards.";
+                        }
+                    }
+
+                    db[lang].push({
+                        id: i,
+                        tech: techNames[lang],
+                        category: cat,
+                        title: `Nível ${i}: ${topic}`,
+                        desc: `Resolva o desafio do nível ${i} para a trilha de ${techNames[lang]}.`,
+                        code: codeTpl,
+                        answers: ans,
+                        hint: `Preencha o comando correto para ${topic}.`,
+                        explanation: exp,
+                        filename: `desafio_${i}.${fileExt}`
+                    });
                 }
-                
-                // Ordenar por ID para navegação fluida
-                currentList.sort((a, b) => a.id - b.id);
             });
 
-            // ESTADO GLOBAL
+            // ESTADO DO JOGO
             let state = {
                 lang: 'python',
                 currentLevelIndex: 0,
@@ -401,7 +397,7 @@
             };
 
             function loadStorage() {
-                const saved = localStorage.getItem('code_quest_300_data');
+                const saved = localStorage.getItem('code_quest_v300_final');
                 if (saved) {
                     try {
                         const parsed = JSON.parse(saved);
@@ -420,7 +416,7 @@
             }
 
             function saveStorage() {
-                localStorage.setItem('code_quest_300_data', JSON.stringify({
+                localStorage.setItem('code_quest_v300_final', JSON.stringify({
                     lang: state.lang,
                     currentLevelIndex: state.currentLevelIndex,
                     score: state.score,
@@ -465,7 +461,7 @@
             const levelsGrid = document.getElementById('levelsGrid');
             const resetProgressBtn = document.getElementById('resetProgressBtn');
 
-            // RENDERIZAÇÃO DE NÍVEIS
+            // RENDERIZAÇÃO
             function renderLevel() {
                 const currentList = db[state.lang];
                 const lvl = currentList[state.currentLevelIndex];
@@ -517,7 +513,7 @@
                 progressBar.style.width = `${pct}%`;
             }
 
-            // VALIDAÇÃO DE RESPOSTAS
+            // CHECAR RESPOSTA
             answerForm.addEventListener('submit', (e) => {
                 e.preventDefault();
                 const inputVal = answerInput.value.trim();
@@ -555,11 +551,11 @@
                     feedbackTitle.innerText = "Sintaxe Incorreta";
                     feedbackTitle.className = "font-bold text-lg mb-1 text-rose-400";
                     feedbackText.innerText = `O valor '${inputVal}' não responde a esta lacuna. Tente novamente!`;
-                    explanationText.innerHTML = `Analise os conceitos da etapa ${lvl.category}.`;
+                    explanationText.innerHTML = `Examine as regras e sintaxe da etapa ${lvl.category}.`;
                 }
             });
 
-            // MUDANÇA DE TRILHA
+            // TROCAR DE LINGUAGEM
             document.querySelectorAll('.lang-tab').forEach(tab => {
                 tab.addEventListener('click', (e) => {
                     const targetLang = e.currentTarget.dataset.lang;
@@ -609,7 +605,7 @@
                 }
             });
 
-            // DRAWER LATERAL
+            // DRAWER SIDEBAR
             toggleSidebarBtn.addEventListener('click', () => {
                 levelsSidebar.classList.remove('translate-x-full');
             });
@@ -668,9 +664,9 @@
                 });
             });
 
-            // REINICIAR
+            // REINICIAR TUDO
             resetProgressBtn.addEventListener('click', () => {
-                if (confirm(`Tem certeza que deseja reiniciar o progresso dos 300 níveis de ${state.lang.toUpperCase()}?`)) {
+                if (confirm("Tem certeza que deseja reiniciar o progresso dos 300 níveis?")) {
                     state.completed[state.lang].clear();
                     state.currentLevelIndex = 0;
                     saveStorage();
